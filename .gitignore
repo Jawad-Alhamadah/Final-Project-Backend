@@ -1,2 +1,6 @@
 .env
 mockdata.js
+
+.gitignore
+final-project-1b8b6-firebase-adminsdk-ygxud-1484d01997.json
+node_modules
