@@ -2,15 +2,22 @@ import mongoose from "mongoose"
 
 let positionSchema = new mongoose.Schema(
     {
-        title: String,
+        title: {
+            type:String,
+            required:[true,"You must provide a title"]
+        },
         description: String,
         department: { ref: "department", type: mongoose.SchemaTypes.ObjectId },
         expectedSalary:Number,
         experienceYears:Number,
         requirments:[String],
-        workingHours:Number,
+        workingHours:{
+            type:Number,
+            required:[true,"You Must Provide working hours"]
+        },
         jobType:String,
-        shift:String
+        shift:String,
+        status:Boolean
     },
 
 )

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const AccountSchema = new mongoose.Schema({
+    
     name: String,
     email: {
         type: String,
@@ -19,9 +20,15 @@ const AccountSchema = new mongoose.Schema({
     },
     password: String,
     accountType: String,
-    department:{ ref: "department", type: mongoose.SchemaTypes.ObjectId },
-    excess:Boolean
+    department: { ref: "department", type: mongoose.SchemaTypes.ObjectId },
+    excess: Boolean,
+    skills: [String],
+    yearsOfExperience: Number,
+    positionTitle: String,
+
 });
 
 const Account = mongoose.model("account", AccountSchema);
 export default Account;
+
+
