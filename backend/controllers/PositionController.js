@@ -132,6 +132,7 @@ export async function fillPosition(req, res) {
         await employee.save({session})
 
         newDepartment.employees.push(employee._id)
+        newDepartment.employees = await [...new Set(newDepartment.employees)]
         oldDepartment.employees = await oldDepartment.employees.filter(e=>e.toString()!==employee._id.toString())
         oldDepartment.positions = await oldDepartment.positions.filter(p=>p.toString()!==position._id.toString())
 
