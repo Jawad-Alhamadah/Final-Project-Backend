@@ -10,9 +10,9 @@ let departmentSchema = new mongoose.Schema(
         status: String,
         manager: { ref: "account", type: mongoose.SchemaTypes.ObjectId },
         employees: [{ ref: "account", type: mongoose.SchemaTypes.ObjectId }],
-        limit:Number,
         neededEmployees:[String],
         positions: [{ ref: "position", type: mongoose.SchemaTypes.ObjectId }],
+        company:{ ref: "company", type: mongoose.SchemaTypes.ObjectId }
     },
 
 )

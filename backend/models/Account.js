@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const AccountSchema = new mongoose.Schema({
-    
+
     name: String,
     email: {
         type: String,
@@ -21,11 +21,12 @@ const AccountSchema = new mongoose.Schema({
     password: String,
     accountType: String,
     department: { ref: "department", type: mongoose.SchemaTypes.ObjectId },
-    excess: Boolean,
+    excess: Boolean, // is the person hired or not
     skills: [String],
     yearsOfExperience: Number,
     positionTitle: String,
-
+    passwordChanged:Boolean,
+    company:{ ref: "company", type: mongoose.SchemaTypes.ObjectId }
 });
 
 const Account = mongoose.model("account", AccountSchema);

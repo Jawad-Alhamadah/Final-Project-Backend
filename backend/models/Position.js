@@ -17,7 +17,8 @@ let positionSchema = new mongoose.Schema(
         },
         jobType:String,
         shift:String,
-        status:Boolean
+        status:Boolean,
+        company:{ ref: "company", type: mongoose.SchemaTypes.ObjectId }
     },
 
 )

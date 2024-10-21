@@ -1,6 +1,6 @@
 import Department from "../models/Department.js";
 import Account from "../models/Account.js";
-import axios from "axios"
+
 export async function getEmployeeSurplusByDepartment(req, res) {
     let { name } = req.params
 
@@ -16,10 +16,12 @@ export async function getEmployeeSurplusByDepartment(req, res) {
 
 
 export async function getAllDepartments(req, res) {
+    let companyId = req.query["company"]
+    if (!companyId) return res.status(404).send({ msg: "Company Not Found" })
 
     try {
-        let departments = await Department.find()
-        if (!departments) return res.status(404).send("no department found")
+        let departments = await Department.find({ companyId })
+        if (!departments || departments.length <= 0) return res.status(404).send("no department found")
         res.status(200).send(departments)
     }
     catch (err) { res.status(500).send({ msg: "Error getting department" }) }
@@ -28,33 +30,26 @@ export async function getAllDepartments(req, res) {
 }
 
 export async function postDepartment(req, res) {
-    let { name, empNum, managerName, password, email, limit } = req.body
 
-    let new_manager = await axios.post("http://localhost:3000/signup", {
-        email,
-        password,
-        name: managerName
+   
+    let old_account = await Account.findOne({ email })
+    if (old_account) return res.status(400).send({ msg: "Email Already Exists" })
 
-    }).catch(err => { res.status(500).send({ msg: err.response.data.msg }); return null })
 
-    if (!new_manager?.data) return
-
-    new_manager = new_manager.data
-    let status
-    if (limit > empNum) status = "shortage"
-    if (limit < empNum) status = "surplus"
-    if (limit === empNum) status = "normal"
     let check_department = await Department.find({ name })
     if (check_department) return res.status(400).send({ msg: "department already exists" })
+
+    let check_manager = await Account.findById(check_manager)
+    if (!check_manager?.department) return res.status(400).send({ msg: "Already a manager of a different department" })
     let new_department = await new Department({
         name,
-        empNum,
-        status: status,
-        manager: new_manager.id,
-        "employees": null,
-        limit,
-        "neededEmployees": [],
-        "positions": [],
+        empNum: 0,
+        status: "normal",
+        manager,
+        employees: [],
+        neededEmployees: [],
+        positions: [],
+        company: companyId
     })
 
     try {
@@ -102,25 +97,76 @@ export async function getDepartmentById(req, res) {
 
 }
 
-export async function getDepartmentsWithShortage(req, res) {
+// export async function getDepartmentsWithShortage(req, res) {
 
+//     try {
+//         let departments = await Department.find({ status: "shortage" }).populate("employees")
+//         if (!departments) return res.status(404).send("no department found")
+//         res.status(200).send(departments)
+//     }
+//     catch (err) { res.status(500).send({ msg: "Error getting department" }) }
+
+// }
+
+// export async function getDepartmentsWithSurplus(req, res) {
+
+//     try {
+//         let departments = await Department.find({ status: "surplus" }).populate("employees")
+//         if (!departments) return res.status(404).send("no department found")
+//         res.status(200).send(departments)
+//     }
+//     catch (err) { res.status(500).send({ msg: "Error getting department" }) }
+
+
+// }
+
+export async function getDepartmentShortage(req, res) {
+    let companyId = req.query["company"]
+    if (!companyId) return res.status(404).send({ msg: "Company Not Found" })
+   
     try {
-        let departments = await Department.find({ status: "shortage" }).populate("employees")
-        if (!departments) return res.status(404).send("no department found")
-        res.status(200).send(departments)
+
+        let shortage_departments = await Department.find({
+            positions:{$not: {$size:0}},
+            company:companyId
+        })
+        
+        if (!shortage_departments || shortage_departments.length <= 0) return res.status(404).send({ msg: "no departments with shortage" })
+        return res.send(shortage_departments)
     }
-    catch (err) { res.status(500).send({ msg: "Error getting department" }) }
+    catch (err) { console.log(err); res.status(500).send({ msg: "Error getting record" }) }
 
 }
 
-export async function getDepartmentsWithSurplus(req, res) {
 
+export async function getDepartmentSurplus(req, res) {
+    let companyId = req.query["company"]
+    if (!companyId) return res.status(404).send({ msg: "Company Not Found" })
+   
     try {
-        let departments = await Department.find({ status: "surplus" }).populate("employees")
-        if (!departments) return res.status(404).send("no department found")
-        res.status(200).send(departments)
-    }
-    catch (err) { res.status(500).send({ msg: "Error getting department" }) }
 
+        let surplus_departments = await Department.aggregate([
+            {
+              $lookup: {
+                from: "accounts", // Schema you are linking to
+                localField: "employees", // its name in the Department schema (or locally)
+                foreignField: "_id", //the Key that ties the two Schemas
+                as: "employees" // The Name you want to give the resutling population
+              }
+            },
+            {
+              $match: {
+                "employees.excess": true, // filter
+              }
+            }
+          ]);
+        
+        let filteredByCompany = await surplus_departments.filter(d =>d.company.toString() === companyId)
+       
+        if (!filteredByCompany || filteredByCompany.length <= 0) return res.status(404).send({ msg: "no departments with surplus" })
+        return res.send(filteredByCompany)
+    }
+    catch (err) { console.log(err); res.status(500).send({ msg: "Error getting record" }) }
 
 }
+

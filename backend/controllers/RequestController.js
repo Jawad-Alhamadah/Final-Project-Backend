@@ -75,14 +75,11 @@ export async function getRequestByAccountIdReceiver(req, res) {
 export async function updateRequest(req, res) {
     let { senderStatus, reciverStatus } = req.body
     let { id } = req.params
-
     try {
 
         let request = await Request.findByIdAndUpdate(id, { senderStatus, reciverStatus }, { new: true })
         return res.status(200).send(request)
-
     }
-
     catch (err) {
         console.log(err.message); res.status(500).send({ msg: err.message })
     }
@@ -97,7 +94,6 @@ export async function deleteRequest(req, res) {
 
         let request = await Request.findByIdAndDelete(id)
         return res.status(200).send(request)
-
     }
 
     catch (err) {

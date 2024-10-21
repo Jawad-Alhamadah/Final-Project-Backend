@@ -1,16 +1,22 @@
 import { Router } from "express";
 import multer from "multer"
-import { postDepartment, getDepartmentById, getDepartmentsWithShortage, getDepartmentsWithSurplus, getEmployeesByDepartmentName, getEmployeeSurplusByDepartment, getAllDepartments } from "../controllers/DepartmentController.js";
-import { getAccountById, getAllAccounts, login, signup } from "../controllers/AccountController.js";
-import { deleteRequest, getAllRequests, getRequestByAccountIdReceiver, getRequestByAccountIdSender, getRequestById, postRequest, updateRequest } from "../controllers/RequestController.js";
-import { deletePosition, getAllPositions, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
+import { postDepartment, getDepartmentById, getEmployeesByDepartmentName, getEmployeeSurplusByDepartment, getAllDepartments, getDepartmentShortage, getDepartmentSurplus } from "../controllers/DepartmentController.js";
+import { createAccount, getAccountById, getAllAccounts, getAccountSurplus, login, signup, updateAccount } from "../controllers/AccountController.js";
+import { deleteRequest, getAllRequests, getRequestById, postRequest, updateRequest } from "../controllers/RequestController.js";
+import { deletePosition, fillPosition, getAllPositions, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
 import { getImageByName, uploadImage } from "../controllers/ImageController.js";
+import { Admin_auth, company_auth, Employee_auth, Manager_auth } from "../authorize/authorize.js";
+import { createCompany } from "../controllers/CompanyController.js";
 
 const upload = multer({ dest: 'uploads/' })
 
 
 const router = Router()
 
+//--------------/    company   /---------------/
+router.post("/company", createCompany)
+
+//--------------/    company  /---------------/
 
 //--------------/    Image upload and retrive   /---------------/
 
@@ -27,9 +33,26 @@ router.post("/login", login)
 
 router.post("/signup", signup)
 
-router.get("/account/:id", getAccountById)
+router.get("/account/:id", company_auth, getAccountById)
 
-router.get("/account", getAllAccounts)
+router.get("/account", company_auth, Admin_auth, getAllAccounts)
+
+router.delete("/account", company_auth, Admin_auth, getAllAccounts)
+
+router.patch("/account/:id", company_auth, Employee_auth, updateAccount)
+
+router.post("/createAccount", company_auth, createAccount)
+
+router.get("/account/surplus", company_auth, getAccountSurplus)
+
+// router.get("/shortage",getShortage)
+
+// router.get("/updateAccounts",async (req,res)=>{
+//  await Request.updateMany({},{company:"671639be3a7e27df2d3fcaff"})
+//  await Position.updateMany({},{company:"671639be3a7e27df2d3fcaff"})
+//  await Department.updateMany({},{company:"671639be3a7e27df2d3fcaff"})
+//  res.send("done")
+// })
 
 
 
@@ -39,17 +62,17 @@ router.get("/account", getAllAccounts)
 
 router.get("/request", getAllRequests)
 
-router.get("/request/account/:id/sender", getRequestByAccountIdSender)
+// router.get("/request/account/:id/sender", getRequestByAccountIdSender)
 
-router.get("/request/account/:id/receiver", getRequestByAccountIdReceiver)
+// router.get("/request/account/:id/receiver", getRequestByAccountIdReceiver)
 
-router.post("/request", postRequest)
+//router.post("/request", postRequest)
 
 router.get("/request/:id", getRequestById)
 
-router.patch("/request/:id", updateRequest)
+router.patch("/request/:id", Admin_auth, updateRequest)
 
-router.delete("/request/:id",deleteRequest)
+router.delete("/request/:id", Admin_auth, deleteRequest)
 
 
 
@@ -64,9 +87,11 @@ router.get("/position", getAllPositions)
 
 router.post("/position", postPosition)
 
-router.patch("/position/:id", updatePosition)
+router.patch("/position/:id", Admin_auth, updatePosition)
 
-router.delete("/position/:id",deletePosition)
+router.delete("/position/:id", Admin_auth, deletePosition)
+
+router.post("/fillPosition",Admin_auth,fillPosition)
 
 //--------------/    Position - end    /---------------/
 
@@ -77,17 +102,19 @@ router.get("/department", getAllDepartments)
 
 router.get("/department/id/:id", getDepartmentById)
 
-router.get("/department/shortage", getDepartmentsWithShortage)
+// router.get("/department/shortage", getDepartmentsWithShortage)
 
-router.get("/department/surplus", getDepartmentsWithSurplus)
+// router.get("/department/surplus", getDepartmentsWithSurplus)
 
-router.get("/department/:name/employees", getEmployeesByDepartmentName)
+router.get("/department/shortage", Admin_auth, getDepartmentShortage)
 
-router.get("/department/:name/employees/surplus", getEmployeeSurplusByDepartment)
+router.get("/department/surplus", Admin_auth, getDepartmentSurplus)
 
-router.post("/department", postDepartment)
+router.get("/department/:name/employees", Admin_auth, getEmployeesByDepartmentName)
 
+router.get("/department/:name/employees/surplus", Admin_auth, getEmployeeSurplusByDepartment)
 
+router.post("/department", Admin_auth, postDepartment)
 
 //--------------/   Department - end  /---------------/
 

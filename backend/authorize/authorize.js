@@ -1,21 +1,32 @@
 import jwt from "jsonwebtoken";
 import Account from "../models/Account.js";
-import Idea from "../models/Department.js";
-export  function Admin_auth(req, res, next) {
+import {ObjectId} from "mongoose"
+export function Admin_auth(req, res, next) {
 
-
-     
     const token = req.header('Authorization');
-    if (!token) return res.status(401).json({ error: 'Access denied' });
+    if (!token) return res.status(401).json({ error: 'Access denied: Lack of Authorization' });
 
-    jwt.verify(token, process.env.JWT_secret, async (err, user) => {
-        if (err) return res.status(403).json({ message: 'Invalid Token' });
-       
+    jwt.verify(token, process.env.JWT_secret, async (err, account) => {
+        if (err) return res.status(401).json({ message: 'Invalid Token' });
 
-        let admin = await Account.findById(user.id)
-        if(admin.userType!=="admin") return res.status(401).json({ message: 'Cant Access Unless you are an admin' });
-      
-        
+
+        let admin = await Account.findById(account.id)
+        if (admin.accountType !== "admin") return res.status(403).json({ message: 'Need admin permission for this action' });
+        next()
+    });
+
+}
+
+
+export function Employee_auth(req, res, next) {
+
+    const token = req.header('Authorization');
+    if (!token) return res.status(401).json({ error: 'Access denied: Lack of Authorization' });
+
+    jwt.verify(token, process.env.JWT_secret, async (err, account) => {
+        if (err) return res.status(401).json({ message: 'Invalid Token' });
+
+        if (account.id !== req.params.id) return res.status(403).json({ message: 'Access denied' })
         next()
     });
 
@@ -23,43 +34,86 @@ export  function Admin_auth(req, res, next) {
 
 
 
-
-
-export function Student_auth(req, res, next) {
+export function Manager_auth(req, res, next) {
 
     const token = req.header('Authorization');
-    if (!token) return res.status(401).json({ error: 'Access denied' });
+    if (!token) return res.status(401).json({ error: 'Access denied: Lack of Authorization' });
 
-    jwt.verify(token, process.env.JWT_secret, async (err, user) => {
-        if (err) return res.status(403).json({ message: 'Invalid Token' });
-       
+    jwt.verify(token, process.env.JWT_secret, async (err, account) => {
+        if (err) return res.status(401).json({ message: 'Invalid Token' });
 
-        let student = await Account.findById(user.id).catch(err=>{return res.status(500).send(err.message)})
+        let new_account = await Account.findById(account.id)
+        if (!new_account) return res.status(401).json({ message: 'Acess denied' });
 
-        let idea = await Idea.findById(req.params.id).catch(err=>{return res.status(500).send(err.message)})
+        let isAuthorized = new_account.accountType === "admin" || new_account.accountType === "manager"
+        if (!isAuthorized) return res.status(401).json({ message: 'Acess denied' });
 
 
-        if (!idea) return res.status(404).send({message:"Project not found"})
-        if (!student) return res.status(404).send({message:"Project Owner Not found"})
-
-            
-        if(student.userType==="admin") return  next()
-        if(idea.studentId!=user.id ) return res.status(401).json({ message: 'Unauthorized Edit' });
-       
-        
         next()
     });
 
 }
+
+export function company_auth (req,res,next){
+    const token = req.header('Authorization');
+    if (!token) return res.status(401).json({ error: 'Access denied: Lack of Authorization' });
+
+    let companyId = req.query["company"]
+    if(!companyId) return res.status(404).send({msg:"Company Not Found"})
+        jwt.verify(token, process.env.JWT_secret, async (err, account) => {
+
+            if (err) return res.status(401).json({ message: 'Invalid Token' });
+    
+            let new_account = await Account.findById(account.id)
+            if (!new_account) return res.status(401).json({ message: 'Acess denied' });
+ 
+            let isAuthorized = new_account.company.toString() === companyId
+            if (!isAuthorized) return res.status(401).json({ message: 'Acess denied' });
+    
+    
+            next()
+        });
+
+ 
+
+}
+
+
+
+
+
+// export function Student_auth(req, res, next) {
+
+//     const token = req.header('Authorization');
+//     if (!token) return res.status(401).json({ error: 'Access denied' });
+
+//     jwt.verify(token, process.env.JWT_secret, async (err, user) => {
+//         if (err) return res.status(403).json({ message: 'Invalid Token' });
+
+
+//         let student = await Account.findById(user.id).catch(err=>{return res.status(500).send(err.message)})
+
+//         let idea = await Idea.findById(req.params.id).catch(err=>{return res.status(500).send(err.message)})
+
+
+//         if (!idea) return res.status(404).send({message:"Project not found"})
+//         if (!student) return res.status(404).send({message:"Project Owner Not found"})
+
+
+//         if(student.userType==="admin") return  next()
+//         if(idea.studentId!=user.id ) return res.status(401).json({ message: 'Unauthorized Edit' });
+
+
+//         next()
+//     });
+
+// }
 
 
 
 
 export function General_Auth(req, res, next) {
 
-    
-    
-     
     const token = req.header('Authorization');
     if (!token) return res.status(401).json({ error: 'Access denied' });
 
