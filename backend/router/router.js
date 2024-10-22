@@ -14,7 +14,8 @@ const upload = multer({ dest: 'uploads/' })
 const router = Router()
 
 //--------------/    company   /---------------/
-router.post("/company", createCompany)
+
+// router.post("/company", createCompany)
 
 //--------------/    company  /---------------/
 

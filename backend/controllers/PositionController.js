@@ -52,7 +52,7 @@ export async function postPosition(req, res) {
   
         let dep = await Department.findById(department).session(session)
         if(!dep){
-            session.abortTransaction()
+           await session.abortTransaction()
             return res.status(404).send({msg:"Department not found"}) 
         }
      
@@ -64,7 +64,7 @@ export async function postPosition(req, res) {
     }
 
     catch (err) {
-        session.abortTransaction()
+       await session.abortTransaction()
         console.log(err.message); res.status(500).send({ msg: err.message })
     }
     finally{
@@ -126,24 +126,24 @@ export async function fillPosition(req, res) {
         let position = await Position.findById(positionId).populate("department").session(session)
 
         if(!position){ 
-            session.abortTransaction()
+           await session.abortTransaction()
             return res.status(404).send({msg:"position not found"})
         }
 
         if(position.status){ 
-            session.abortTransaction()
+            await session.abortTransaction()
             return res.status(400).send({msg:"position is already full"})
         }
 
         let employee = await Account.findById(employeeId).populate("department").session(session)
         if(!employee){ 
-            session.abortTransaction()
+            await session.abortTransaction()
             return res.status(404).send({msg:"Employee not found"})
         }
         
         let oldDepartment = await Department.findById(employee.department._id).session(session)
         if(!oldDepartment){
-             session.abortTransaction()
+            await session.abortTransaction()
              return res.status(404).send({msg:"Department not found"}) 
             }
     
@@ -151,7 +151,7 @@ export async function fillPosition(req, res) {
 
         let newDepartment = await Department.findById(position.department._id).session(session)
         if(!newDepartment){
-            session.abortTransaction()
+          await  session.abortTransaction()
             return res.status(404).send({msg:"Department not found"})
         }
 
@@ -173,6 +173,7 @@ export async function fillPosition(req, res) {
         oldDepartment.employees = await oldDepartment.employees.filter(e=>e.toString()!==employee._id.toString())
         oldDepartment.positions = await oldDepartment.positions.filter(p=>p.toString()!==position._id.toString())
 
+        oldDepartment.empNum = oldDepartment.employees.length
         await newDepartment.save({session})
         await oldDepartment.save({session})
         let request = await new Request({

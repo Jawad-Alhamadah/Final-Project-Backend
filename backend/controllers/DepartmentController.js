@@ -36,35 +36,39 @@ export async function postDepartment(req, res) {
     let { name, manager } = req.body
     let companyId = req.query["company"]
 
- 
+    let session = await mongoose.startSession()
+    session.startTransaction();
+    
     try {
 
-        let session = await mongoose.startSession()
-        session.startTransaction();
-        
-    
+
         let check_department = await Department.findOne({ name }).session(session)
 
         if (check_department) {
-            session.abortTransaction()
+            await session.abortTransaction()
             return res.status(400).send({ msg: "department already exists" })
         }
 
         let check_manager = await Account.findById(manager).session(session)
         if (!check_manager){
-            session.abortTransaction()
-            return res.status(400).send({ msg: "Manager not found" })
+            await session.abortTransaction()
+            return res.status(400).send({ msg: "account not found" })
         } 
-        if (!check_manager?.department){
-            session.abortTransaction()
+       
+        if(check_manager.accountType!=="manager"){
+            await session.abortTransaction()
+            return res.status(400).send({ msg: "Account is not a manager" })
+        }
+        if (check_manager?.department){
+            await session.abortTransaction()
             return res.status(400).send({ msg: "Already a manager of a different department" })
         } 
 
         let new_department = await new Department({
             name,
-            empNum: 0,
+            empNum: 1,
             manager,
-            employees: [],
+            employees: [check_manager._id],
             neededEmployees: [],
             positions: [],
             company: companyId
@@ -73,13 +77,13 @@ export async function postDepartment(req, res) {
         check_manager.department = new_department._id
 
         await new_department.save({session})
-
-        session.commitTransaction()
+        await check_manager.save({session})
+        await session.commitTransaction()
         return res.status(200).send(new_department)
 
     }
     catch (err) { 
-        session.abortTransaction()
+        await session.abortTransaction()
         return res.status(500).send({ msg: "error creating department" }) 
     }
     finally{
@@ -196,4 +200,5 @@ export async function getDepartmentSurplus(req, res) {
     catch (err) { console.log(err); res.status(500).send({ msg: "Error getting record" }) }
 
 }
+
 

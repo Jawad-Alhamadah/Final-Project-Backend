@@ -1,6 +1,7 @@
 import Account from "../models/Account.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import Company from "../models/Company.js";
 
 export async function deleteByAccount(req, res) {
     try {
@@ -48,26 +49,26 @@ export async function login(req, res) {
     let { email, password } = req.body
 
     try {
-        let account = await Account.findOne({ email })
+        let account = await Account.findOne({ email }).populate("department")
         if (!account) return res.status(404).send({ msg: "Email not found" })
         let isMatched = await bcrypt.compare(password, account.password)
         if (!isMatched) return res.status(400).send({ msg: "incorrect password" })
 
         let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
-        res.status(200).send({ msg: "login succesful", company: account.company, name: account.name, token: token, excess: account.excess })
+        res.status(200).send({ msg: "login succesful",department:account.department ,company: account.company, name: account.name, token: token, excess: account.excess })
     }
     catch (err) { res.status(500).send({ msg: "Error while trying to login" }) }
 
 }
 
 export async function signup(req, res) {
-    let { email, password, name } = req.body
+    let { email, password, name, company } = req.body
 
     try {
         let old_account = await Account.findOne({ email })
         if (old_account) return res.status(400).send({ msg: "Email Already Exists" })
 
-        let account = new Account({
+        let account = await new Account({
             password,
             email,
             name,
@@ -82,11 +83,18 @@ export async function signup(req, res) {
 
         })
 
+        let new_company = await new Company({
+            name:company,
+            admin:account._id
+            
+        })
+
+        await account.save()
+        await new_company.save()
         let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
-        account.save().catch(err => console.log(err.message))
-        res.status(200).send({ msg: "Signup sucessful", company: account.company, name: account.name, id: account._id, token: token, excess: account.excess })
+        res.status(200).send({ msg: "Signup sucessful", company:new_company, name: account.name, id: account._id, token: token, excess: account.excess })
     }
-    catch (err) { res.status(500).send({ msg: "Error while trying to login" }) }
+    catch (err) { res.status(500).send({ msg: "Error while trying to signup" }) }
 }
 
 export async function createAccount(req, res) {
