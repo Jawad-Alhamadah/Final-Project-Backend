@@ -35,6 +35,8 @@ export function Employee_auth(req, res, next) {
 
 
 export function Manager_auth(req, res, next) {
+    let companyId = req.query["company"]
+    if(!companyId) return res.status(404).json({ error: 'Company Not found' });
 
     const token = req.header('Authorization');
     if (!token) return res.status(401).json({ error: 'Access denied: Lack of Authorization' });
@@ -45,7 +47,9 @@ export function Manager_auth(req, res, next) {
         let new_account = await Account.findById(account.id)
         if (!new_account) return res.status(401).json({ message: 'Acess denied' });
 
-        let isAuthorized = new_account.accountType === "admin" || new_account.accountType === "manager"
+        if(new_account.company.toString()!==companyId)  return res.status(401).json({ message: 'Cant Acess Company' });
+
+        let isAuthorized =  new_account.accountType === "manager"
         if (!isAuthorized) return res.status(401).json({ message: 'Acess denied' });
 
 
@@ -67,6 +71,8 @@ export function company_auth (req,res,next){
             let new_account = await Account.findById(account.id)
             if (!new_account) return res.status(401).json({ message: 'Acess denied' });
  
+            if(new_account.company.toString()!==req.query["company"])  return res.status(401).json({ message: 'acess denied' });
+            
             let isAuthorized = new_account.company.toString() === companyId
             if (!isAuthorized) return res.status(401).json({ message: 'Acess denied' });
     

@@ -28,6 +28,7 @@ export async function getAllPositions(req, res) {
 }
 
 export async function postPosition(req, res) {
+    
     let { title, description, department, expectedSalary, experienceYears,
         requirments, workingHours, jobType, shift } = req.body
     try {

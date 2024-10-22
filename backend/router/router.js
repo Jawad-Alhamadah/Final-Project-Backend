@@ -85,7 +85,7 @@ router.get("/position/:id", getPositionById)
 
 router.get("/position", getAllPositions)
 
-router.post("/position", postPosition)
+router.post("/position", Manager_auth,postPosition)
 
 router.patch("/position/:id", Admin_auth, updatePosition)
 
