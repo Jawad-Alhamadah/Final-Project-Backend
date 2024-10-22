@@ -28,7 +28,11 @@ export async function getAllPositions(req, res) {
 }
 
 export async function postPosition(req, res) {
-    
+
+
+    let session = await mongoose.startSession()
+    session.startTransaction();
+
     let { title, description, department, expectedSalary, experienceYears,
         requirments, workingHours, jobType, shift } = req.body
     try {
@@ -44,12 +48,27 @@ export async function postPosition(req, res) {
             shift: shift || "day",
             status: false,
         })
-        await position.save()
+        let new_position =  await position.save({session})
+  
+        let dep = await Department.findById(department).session(session)
+        if(!dep){
+            session.abortTransaction()
+            return res.status(404).send({msg:"Department not found"}) 
+        }
+     
+
+        dep.positions.push(new_position._id)
+        await dep.save({session})
+        await session.commitTransaction()
         return res.status(200).send(position)
     }
 
     catch (err) {
+        session.abortTransaction()
         console.log(err.message); res.status(500).send({ msg: err.message })
+    }
+    finally{
+        session.endSession()
     }
 
 }
@@ -105,19 +124,36 @@ export async function fillPosition(req, res) {
     try {
 
         let position = await Position.findById(positionId).populate("department").session(session)
-        if(!position) return res.status(404).send({msg:"position not found"})
-        if(position.status) return res.status(400).send({msg:"position is already full"})
+
+        if(!position){ 
+            session.abortTransaction()
+            return res.status(404).send({msg:"position not found"})
+        }
+
+        if(position.status){ 
+            session.abortTransaction()
+            return res.status(400).send({msg:"position is already full"})
+        }
 
         let employee = await Account.findById(employeeId).populate("department").session(session)
-        if(!employee) return res.status(404).send({msg:"Employee not found"})
+        if(!employee){ 
+            session.abortTransaction()
+            return res.status(404).send({msg:"Employee not found"})
+        }
         
         let oldDepartment = await Department.findById(employee.department._id).session(session)
-        if(!oldDepartment) return res.status(404).send({msg:"Department not found"})
+        if(!oldDepartment){
+             session.abortTransaction()
+             return res.status(404).send({msg:"Department not found"}) 
+            }
     
         
 
         let newDepartment = await Department.findById(position.department._id).session(session)
-        if(!newDepartment) return res.status(404).send({msg:"Department not found"})
+        if(!newDepartment){
+            session.abortTransaction()
+            return res.status(404).send({msg:"Department not found"})
+        }
 
         
         let oldPosition = employee.positionTitle

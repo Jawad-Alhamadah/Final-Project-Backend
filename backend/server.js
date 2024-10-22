@@ -3,7 +3,7 @@ import mongoose from "mongoose"
 import dotenv from 'dotenv'
 import router from "./router/router.js"
 import cors from "cors"
-let port = 3000 
+
 
 dotenv.config()
 
@@ -14,6 +14,7 @@ async function startConnection() {
     console.log("connected to Mongoose")
 }
 
+let port = process.env.BACKEND_PORT 
 const app = express()
 app.use(express.json())
 app.use(cors())

@@ -5,7 +5,7 @@ import { createAccount, getAccountById, getAllAccounts, getAccountSurplus, login
 import { deleteRequest, getAllRequests, getRequestById, postRequest, updateRequest } from "../controllers/RequestController.js";
 import { deletePosition, fillPosition, getAllPositions, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
 import { getImageByName, uploadImage } from "../controllers/ImageController.js";
-import { Admin_auth, company_auth, Employee_auth, Manager_auth } from "../authorize/authorize.js";
+import { Admin_auth, company_auth, Employee_auth, Manager_auth, verify_department } from "../authorize/authorize.js";
 import { createCompany } from "../controllers/CompanyController.js";
 
 const upload = multer({ dest: 'uploads/' })
@@ -85,7 +85,7 @@ router.get("/position/:id", getPositionById)
 
 router.get("/position", getAllPositions)
 
-router.post("/position", Manager_auth,postPosition)
+router.post("/position", Manager_auth,verify_department,postPosition)
 
 router.patch("/position/:id", Admin_auth, updatePosition)
 
@@ -114,7 +114,7 @@ router.get("/department/:name/employees", Admin_auth, getEmployeesByDepartmentNa
 
 router.get("/department/:name/employees/surplus", Admin_auth, getEmployeeSurplusByDepartment)
 
-router.post("/department", Admin_auth, postDepartment)
+router.post("/department", Admin_auth,company_auth, postDepartment)
 
 //--------------/   Department - end  /---------------/
 
