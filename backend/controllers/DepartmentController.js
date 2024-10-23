@@ -23,7 +23,7 @@ export async function getAllDepartments(req, res) {
     if (!companyId) return res.status(404).send({ msg: "Company Not Found" })
     console.log(companyId)
     try {
-        let departments = await Department.find({ company: companyId })
+        let departments = await Department.find({ company: companyId }).populate("manager")
         if (!departments || departments.length <= 0) return res.status(404).send({ msg: "no department found" })
         res.status(200).send(departments)
     }
