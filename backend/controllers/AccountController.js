@@ -134,7 +134,7 @@ export async function createAccount(req, res) {
 
         //let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
         await account.save()
-        res.status(200).send({ msg: "Account Created Sucessfully",email:account.email, company: account.company, name: account.name, id: account._id, excess: account.excess })
+        res.status(200).send({ msg: "Account Created Sucessfully",accountType:account.accountType,email:account.email, company: account.company, name: account.name, id: account._id, excess: account.excess })
     }
     catch (err) {console.log(err) ;res.status(500).send({ msg: "Error while trying to create Account" }) }
 }
