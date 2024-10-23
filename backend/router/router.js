@@ -4,7 +4,7 @@ import { postDepartment, getDepartmentById, getEmployeesByDepartmentName, getEmp
 import { createAccount, getAccountById, getAllAccounts, getAccountSurplus, login, signup, updateAccount, updateAccountSkills, deleteAccountSkills } from "../controllers/AccountController.js";
 import { deleteRequest, getAllRequests, getRequestById, postRequest, updateRequest } from "../controllers/RequestController.js";
 import { deletePosition, fillPosition, getAllPositions, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
-import { getImageByName, uploadImage } from "../controllers/ImageController.js";
+// import { getImageByName, uploadImage } from "../controllers/ImageController.js";
 import { Admin_auth, company_auth, Employee_auth, Manager_auth, verify_department } from "../authorize/authorize.js";
 import { createCompany } from "../controllers/CompanyController.js";
 
@@ -21,9 +21,9 @@ const router = Router()
 
 //--------------/    Image upload and retrive   /---------------/
 
-router.post("/upload", upload.single("image"), uploadImage)
+// router.post("/upload", upload.single("image"), uploadImage)
 
-router.get('/image/:filename', getImageByName);
+// router.get('/image/:filename', getImageByName);
 
 //--------------/    Image upload and retrive   - end  /---------------/
 
