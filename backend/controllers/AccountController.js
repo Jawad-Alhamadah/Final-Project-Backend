@@ -169,12 +169,12 @@ export async function createAccount(req, res) {
 
 
 export async function updateAccount(req, res) {
-    let { yearsOfExperience, skills } = req.body
+    let { yearsOfExperience, skills,positionTitle } = req.body
     let { id } = req.params
 
     try {
 
-        let account = await Account.findByIdAndUpdate(id, { yearsOfExperience, skills }, { new: true })
+        let account = await Account.findByIdAndUpdate(id, { positionTitle,yearsOfExperience, skills }, { new: true })
         let { password, __v, ...rest } = account._doc
         return res.status(200).send(rest)
 

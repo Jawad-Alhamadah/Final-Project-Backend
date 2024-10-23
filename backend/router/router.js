@@ -8,6 +8,18 @@ import { deletePosition, fillPosition, getAllPositions, getPositionById, postPos
 import { Admin_auth, company_auth, Employee_auth, Manager_auth, verify_department } from "../authorize/authorize.js";
 import { createCompany } from "../controllers/CompanyController.js";
 
+import OpenAI from "openai";
+
+import dotenv from 'dotenv'
+import Account from "../models/Account.js";
+dotenv.config()
+const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
+
+
+
+
+
+
 const upload = multer({ dest: 'uploads/' })
 
 
@@ -40,15 +52,15 @@ router.get("/account", company_auth, Admin_auth, getAllAccounts)
 
 router.delete("/account", company_auth, Admin_auth, getAllAccounts)
 
-router.patch("/account/:id", company_auth, Employee_auth, updateAccount)
+router.patch("/account/:id", /*company_auth, Employee_auth,*/ updateAccount)
 
-router.post("/createAccount", company_auth,Admin_auth, createAccount)
+router.post("/createAccount", company_auth, Admin_auth, createAccount)
 
 router.get("/account/surplus", company_auth, getAccountSurplus)
 
-router.patch("/account/skill/:id", company_auth,Employee_auth,updateAccountSkills)
+router.patch("/account/skill/:id", company_auth, Employee_auth, updateAccountSkills)
 
-router.delete("/account/skill/:id", company_auth,Employee_auth,deleteAccountSkills)
+router.delete("/account/skill/:id", company_auth, Employee_auth, deleteAccountSkills)
 
 router.get("/account/type/:type", company_auth, Admin_auth, getAccountByType)
 
@@ -92,13 +104,13 @@ router.get("/position/:id", getPositionById)
 
 router.get("/position", getAllPositions)
 
-router.post("/position", Manager_auth,verify_department,postPosition)
+router.post("/position", Manager_auth, verify_department, postPosition)
 
 router.patch("/position/:id", Admin_auth, updatePosition)
 
 router.delete("/position/:id", Admin_auth, deletePosition)
 
-router.post("/fillPosition",Admin_auth,fillPosition)
+router.post("/fillPosition", Admin_auth, fillPosition)
 
 //--------------/    Position - end    /---------------/
 
@@ -121,7 +133,7 @@ router.get("/department/:name/employees", Admin_auth, getEmployeesByDepartmentNa
 
 router.get("/department/:name/employees/surplus", Admin_auth, getEmployeeSurplusByDepartment)
 
-router.post("/department", Admin_auth,company_auth, postDepartment)
+router.post("/department", Admin_auth, company_auth, postDepartment)
 
 //--------------/   Department - end  /---------------/
 
@@ -159,5 +171,39 @@ router.post("/department", Admin_auth,company_auth, postDepartment)
 //     }
 //   ]);
 
+router.get("/chat", async (req, res) => {
+    //gpt-4o
+    
+    let employees = await Account.find({accountType:"employee",excess:true}).populate("department")
+   let filtered  = await employees.map(({_doc})=>{
+
+     let {password,email,excess,department,__v,company,...rest}=_doc;
+      rest.departmentName = _doc.department?.name
+     
+      return rest
+    
+    })
+   
+    res.send(filtered)
+//     const completion = await openai.chat.completions.create({
+//         model: "gpt-4o-mini",
+//         messages: [
+//             { role: "system", content: "You are a Job Recommender. You will be given a number of Employees and you'll recommend Top 3" },
+//             {
+//                 role: "user",
+//                 content: `Here is a list of employees:
+// ${JSON.stringify(employees)}
+
+// We have an open position:
+// ${positionDescription}
+
+// Based on the above, recommend the top 3 most suitable employees.`,
+//             },
+//         ],
+//     });
+
+//     console.log(completion.choices);
+
+})
 
 export default router
