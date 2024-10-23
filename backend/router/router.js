@@ -42,7 +42,7 @@ router.delete("/account", company_auth, Admin_auth, getAllAccounts)
 
 router.patch("/account/:id", company_auth, Employee_auth, updateAccount)
 
-router.post("/createAccount", company_auth, createAccount)
+router.post("/createAccount", company_auth,Admin_auth, createAccount)
 
 router.get("/account/surplus", company_auth, getAccountSurplus)
 

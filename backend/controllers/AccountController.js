@@ -93,12 +93,14 @@ export async function signup(req, res) {
 
         })
 
+              
         let new_company = await new Company({
             name: company,
             admin: account._id
 
         })
 
+        account.company  = new_company._id
         await account.save()
         await new_company.save()
         let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
@@ -108,7 +110,7 @@ export async function signup(req, res) {
 }
 
 export async function createAccount(req, res) {
-
+    let companyId = req.query["company"]
     let { email, password, name, positionTitle, accountType } = req.body
 
     try {
@@ -130,11 +132,11 @@ export async function createAccount(req, res) {
 
         })
 
-        let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
-        account.save().catch(err => console.log(err.message))
-        res.status(200).send({ msg: "Signup sucessful", company: account.company, name: account.name, id: account._id, token: token, excess: account.excess })
+        //let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
+        await account.save()
+        res.status(200).send({ msg: "Account Created Sucessfully",email:account.email, company: account.company, name: account.name, id: account._id, excess: account.excess })
     }
-    catch (err) { res.status(500).send({ msg: "Error while trying to login" }) }
+    catch (err) {console.log(err) ;res.status(500).send({ msg: "Error while trying to create Account" }) }
 }
 
 
