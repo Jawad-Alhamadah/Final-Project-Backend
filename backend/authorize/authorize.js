@@ -25,7 +25,8 @@ export function Employee_auth(req, res, next) {
 
     jwt.verify(token, process.env.JWT_secret, async (err, account) => {
         if (err) return res.status(401).json({ message: 'Invalid Token' });
-
+        console.log(req.params.id)
+        console.log(account.id)
         if (account.id !== req.params.id) return res.status(403).json({ message: 'Access denied' })
         next()
     });

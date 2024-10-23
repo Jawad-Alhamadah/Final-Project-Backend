@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer"
 import { postDepartment, getDepartmentById, getEmployeesByDepartmentName, getEmployeeSurplusByDepartment, getAllDepartments, getDepartmentShortage, getDepartmentSurplus } from "../controllers/DepartmentController.js";
-import { createAccount, getAccountById, getAllAccounts, getAccountSurplus, login, signup, updateAccount } from "../controllers/AccountController.js";
+import { createAccount, getAccountById, getAllAccounts, getAccountSurplus, login, signup, updateAccount, updateAccountSkills, deleteAccountSkills } from "../controllers/AccountController.js";
 import { deleteRequest, getAllRequests, getRequestById, postRequest, updateRequest } from "../controllers/RequestController.js";
 import { deletePosition, fillPosition, getAllPositions, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
 import { getImageByName, uploadImage } from "../controllers/ImageController.js";
@@ -45,6 +45,10 @@ router.patch("/account/:id", company_auth, Employee_auth, updateAccount)
 router.post("/createAccount", company_auth, createAccount)
 
 router.get("/account/surplus", company_auth, getAccountSurplus)
+
+router.patch("/account/skill/:id", company_auth,Employee_auth,updateAccountSkills)
+
+router.delete("/account/skill/:id", company_auth,Employee_auth,deleteAccountSkills)
 
 // router.get("/shortage",getShortage)
 
