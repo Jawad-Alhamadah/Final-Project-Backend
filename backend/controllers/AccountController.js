@@ -28,6 +28,28 @@ export async function getAccountById(req, res) {
 
 }
 
+export async function getAccountByType(req, res) {
+    try {
+        let companyId = req.query["company"]
+        let {type} = req.params 
+       
+        if (type!=="employee" && type!=="manager") return res.status(400).send({msg:"Invalid Account Type"})
+
+        let accounts = await Account.find({ company: companyId ,accountType:type})//.populate("department")
+        let data = accounts.map(e => {
+            let { password, __v, ...accounts } = e._doc
+            return accounts
+        })
+        //
+       return  res.send(data)
+    }
+    catch (err) { console.log(err); res.status(500).send({ msg: "Error getting record" }) }
+
+}
+
+
+
+
 export async function getAllAccounts(req, res) {
     try {
         let companyId = req.query["company"]
@@ -43,6 +65,9 @@ export async function getAllAccounts(req, res) {
     catch (err) { console.log(err); res.status(500).send({ msg: "Error getting record" }) }
 
 }
+
+
+
 
 export async function getAccountSurplus(req, res) {
     try {
