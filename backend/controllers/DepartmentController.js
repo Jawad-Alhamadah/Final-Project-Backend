@@ -120,7 +120,7 @@ export async function getEmployeesByDepartmentName(req, res) {
 export async function getDepartmentById(req, res) {
     try {
         let { id } = req.params
-        let departments = await Department.findById(id).populate("manager").populate("employees")
+        let departments = await Department.findById(id).populate(["manager","employees"])
 
 
         if (!departments) return res.status(404).send("department not found")
