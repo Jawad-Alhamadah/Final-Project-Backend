@@ -65,7 +65,7 @@ export async function login(req, res) {
         if (!isMatched) return res.status(400).send({ msg: "incorrect password" })
 
         let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
-        res.status(200).send({ msg: "login succesful", id: account.id, type:account.accountType, department: account.department, company: account.company, name: account.name, token: token, excess: account.excess })
+        res.status(200).send({ msg: "login succesful", id: account.id, accountType:account.accountType, department: account.department, company: account.company, name: account.name, token: token, excess: account.excess })
     }
     catch (err) { res.status(500).send({ msg: "Error while trying to login" }) }
 
