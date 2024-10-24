@@ -8,7 +8,7 @@ import  mongoose from 'mongoose';
 export async function getPositionById(req, res) {
     try {
         let { id } = req.params
-        let positions = await Position.findById(id)
+        let positions = await Position.findById(id).populate("department")
         if (!positions) return res.status(404).send("position not found")
         return res.status(200).send(positions)
     }
