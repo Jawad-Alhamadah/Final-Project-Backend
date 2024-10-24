@@ -12,7 +12,9 @@ let departmentSchema = new mongoose.Schema(
         employees: [{ ref: "account", type: mongoose.SchemaTypes.ObjectId }],
         neededEmployees:[String],
         positions: [{ ref: "position", type: mongoose.SchemaTypes.ObjectId }],
+        surplusCount:Number,
         company:{ ref: "company", type: mongoose.SchemaTypes.ObjectId }
+        
     },
 
 )

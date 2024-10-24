@@ -172,8 +172,13 @@ export async function fillPosition(req, res) {
         newDepartment.employees = await [...new Set(newDepartment.employees)]
         oldDepartment.employees = await oldDepartment.employees.filter(e=>e.toString()!==employee._id.toString())
         oldDepartment.positions = await oldDepartment.positions.filter(p=>p.toString()!==position._id.toString())
+        oldDepartment.surplusCount =  oldDepartment.surplusCount -1
 
         oldDepartment.empNum = oldDepartment.employees.length
+        newDepartment.empNum = newDepartment.employees.length
+
+    
+
         await newDepartment.save({session})
         await oldDepartment.save({session})
         let request = await new Request({

@@ -2,7 +2,42 @@ import Account from "../models/Account.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import Company from "../models/Company.js";
+import Department from "../models/Department.js";
 
+
+export async function markAsExcess(req,res){
+    let { id } = req.params
+    
+    try{
+     
+        let employee = await Account.findById(id)
+        let department = await Department.findById(employee.department)
+        if(!department) res.status(404).send({msg:"department not found"})
+        if(!employee) res.status(404).send({msg:"employee Not Found"})
+        
+        console.log(department.surplus)
+        if(employee.excess){
+            employee.excess= false
+            if(department)
+            department.surplusCount = department.surplusCount -1
+        }
+        
+        else{
+            employee.excess= true
+            if(department)
+            department.surplusCount = department.surplusCount +1
+        }
+        console.log(department.surplusCount )
+        await employee.save()
+        await department.save()
+        return res.status(200).send({department,employee})
+
+         
+    }
+    catch (err) { console.log(err); res.status(500).send({ msg: "Error getting record" }) }
+
+    
+}
 export async function deleteByAccount(req, res) {
     try {
         let { id } = req.params
@@ -102,9 +137,9 @@ export async function signup(req, res) {
     try {
         let old_account = await Account.findOne({ email })
         if (old_account) return res.status(400).send({ msg: "Email Already Exists" })
-
+        let pass =   await bcrypt.hash(password,10)
         let account = await new Account({
-            password,
+            password:pass,
             email,
             name,
             accountType: "admin",
@@ -141,9 +176,9 @@ export async function createAccount(req, res) {
     try {
         let old_account = await Account.findOne({ email })
         if (old_account) return res.status(400).send({ msg: "Email Already Exists" })
-
+        let pass =   await bcrypt.hash(password,10)
         let account = new Account({
-            password,
+            password:pass,
             email,
             name,
             accountType,

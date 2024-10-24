@@ -25,8 +25,11 @@ const AccountSchema = new mongoose.Schema({
     skills: [String],
     yearsOfExperience: Number,
     positionTitle: String,
-    passwordChanged:Boolean,
-    company:{ ref: "company", type: mongoose.SchemaTypes.ObjectId }
+    passwordChanged: Boolean,
+    aboutMe: String,
+    description: String,
+
+    company: { ref: "company", type: mongoose.SchemaTypes.ObjectId }
 });
 
 const Account = mongoose.model("account", AccountSchema);

@@ -23,7 +23,7 @@ export async function getAllDepartments(req, res) {
     if (!companyId) return res.status(404).send({ msg: "Company Not Found" })
     console.log(companyId)
     try {
-        let departments = await Department.find({ company: companyId }).populate("manager")
+        let departments = await Department.find({ company: companyId }).populate("manager").populate("positions")
         if (!departments || departments.length <= 0) return res.status(404).send({ msg: "no department found" })
         res.status(200).send(departments)
     }
@@ -71,7 +71,8 @@ export async function postDepartment(req, res) {
             employees: [check_manager._id],
             neededEmployees: [],
             positions: [],
-            company: companyId
+            company: companyId,
+            surplusCount:0
         })
 
         check_manager.department = new_department._id
