@@ -198,9 +198,7 @@ router.get("/chat", async (req, res) => {
             { role: "system", content: "You are a recruiter with 20 years experience, head hunter with good experience in finding good employees  . You will be given a number of Employees and you'll recommend the most suitable" },
             {
                 role: "user",
-                content: `i will give you a job in " " and your task is to analyze the position 
-                then i will give you a list of employees, you task is to recommend one whos
-                most qualified. 
+                content: `read Employee 
 
                 make your recommendeation concise.
                 only return the name, the ID and the skills in this configiration 

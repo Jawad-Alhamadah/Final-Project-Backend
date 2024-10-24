@@ -32,6 +32,7 @@ export async function getAllDepartments(req, res) {
 
 }
 
+
 export async function postDepartment(req, res) {
     let { name, manager } = req.body
     let companyId = req.query["company"]
@@ -59,7 +60,7 @@ export async function postDepartment(req, res) {
             await session.abortTransaction()
             return res.status(400).send({ msg: "Account is not a manager" })
         }
-        if (check_manager?.department){
+        if (check_manager.department){
             await session.abortTransaction()
             return res.status(400).send({ msg: "Already a manager of a different department" })
         } 
@@ -80,6 +81,7 @@ export async function postDepartment(req, res) {
         await new_department.save({session})
         await check_manager.save({session})
         await session.commitTransaction()
+
         return res.status(200).send(new_department)
 
     }
