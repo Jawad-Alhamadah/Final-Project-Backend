@@ -13,6 +13,8 @@ import OpenAI from "openai";
 import dotenv from 'dotenv'
 import Account from "../models/Account.js";
 import Department from "../models/Department.js";
+import Skills from "../models/Skills.js";
+import { getSkills } from "../controllers/SkillsController.js";
 dotenv.config()
 const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
 
@@ -136,9 +138,10 @@ router.get("/department/:name/employees/surplus", Admin_auth, getEmployeeSurplus
 
 router.post("/department", Admin_auth, company_auth, postDepartment)
 
-router.patch("/account/excess/:id",markAsExcess)
+router.patch("/account/excess/:id", markAsExcess)
 //--------------/   Department - end  /---------------/
 
+router.get("/skills",getSkills)
 
 //Populate example: 
 // let requests = await  Request.find().populate({ 
@@ -173,25 +176,31 @@ router.patch("/account/excess/:id",markAsExcess)
 //     }
 //   ]);
 
-router.patch("/updateAccounts",async (req,res)=>{
-        let accounts = await Department.updateMany({aboutMe:"",description:""})
-        res.send(accounts)
-})
+// router.patch("/updateAccounts", async (req, res) => {
+   
+//     let new_skill = new Skills({skills})
+//     await new_skill.save()
+     
+//    // let accounts = await Department.updateMany({ aboutMe: "", description: "" })
+//     res.send(new_skill)
+
+
+// })
 
 router.get("/chat", async (req, res) => {
     //gpt-4o
-    
-   let employees = await Account.find({accountType:"employee",excess:true}).populate("department")
-   let filtered  = await employees.map(({_doc})=>{
 
-    let {password,email,excess,department,__v,company,...rest}=_doc;
-    //  rest.departmentName = _doc.department?.name
-     
-      return rest
-    
+    let employees = await Account.find({ accountType: "employee", excess: true }).populate("department")
+    let filtered = await employees.map(({ _doc }) => {
+
+        let { password, email, excess, department, __v, company, ...rest } = _doc;
+        //  rest.departmentName = _doc.department?.name
+
+        return rest
+
     })
-   
- //   res.send(filtered)
+
+    //   res.send(filtered)
     const completion = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
@@ -250,8 +259,8 @@ ${JSON.stringify(employees)}
         ],
     });
 
-//     console.log(completion.choices);
-return res.status(200).send(completion)
+    //     console.log(completion.choices);
+    return res.status(200).send(completion)
 
 })
 
