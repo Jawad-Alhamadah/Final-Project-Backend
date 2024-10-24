@@ -35,6 +35,9 @@ export async function postPosition(req, res) {
 
     let { title, description, department, expectedSalary, experienceYears,
         requirments, jobType } = req.body
+
+        console.log(jobType)
+       
     try {
         let position = new Position({
             title: title || "No Title",

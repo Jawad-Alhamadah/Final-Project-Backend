@@ -37,6 +37,8 @@ export function Employee_auth(req, res, next) {
 export function verify_department(req,res,next){
     let {department} = req.body
     if(!department) return res.status(404).send("no department found")
+
+        
     
     let isAuthorized = department === req.user.department.toString()
     if(!isAuthorized) return res.status(404).send({msg:"Unauthorized: Can't edit different departments"})
