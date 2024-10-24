@@ -54,7 +54,15 @@ export async function getAccountById(req, res) {
 
     try {
         let { id } = req.params
-        let accounts = await Account.findById(id).populate("department")
+        let accounts = await Account.findById(id).populate({
+            path: 'department',   
+            populate: {          
+                path: 'employees',
+                model: 'account'  
+            }
+        })
+        // let accounts = await Account.findById(id).populate("department")
+        
         if (!accounts) return res.status(404).send("account not found")
         let { name, accountType, excess, department } = accounts
         return res.status(200).send({ name, accountType, excess, department })
