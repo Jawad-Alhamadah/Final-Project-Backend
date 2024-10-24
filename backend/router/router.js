@@ -15,6 +15,7 @@ import Account from "../models/Account.js";
 import Department from "../models/Department.js";
 import Skills from "../models/Skills.js";
 import { getSkills } from "../controllers/SkillsController.js";
+import Position from "../models/Position.js";
 dotenv.config()
 const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
 
@@ -141,7 +142,7 @@ router.post("/department", Admin_auth, company_auth, postDepartment)
 router.patch("/account/excess/:id", markAsExcess)
 //--------------/   Department - end  /---------------/
 
-router.get("/skills",getSkills)
+router.get("/skills", getSkills)
 
 //Populate example: 
 // let requests = await  Request.find().populate({ 
@@ -177,90 +178,82 @@ router.get("/skills",getSkills)
 //   ]);
 
 // router.patch("/updateAccounts", async (req, res) => {
-   
+
 //     let new_skill = new Skills({skills})
 //     await new_skill.save()
-     
+
 //    // let accounts = await Department.updateMany({ aboutMe: "", description: "" })
 //     res.send(new_skill)
 
 
 // })
 
-router.get("/chat", async (req, res) => {
+router.get("/chat/:id", async (req, res) => {
     //gpt-4o
-
+    let { id } = req.params //id Of Position
     let employees = await Account.find({ accountType: "employee", excess: true }).populate("department")
+    let position = await Position.findById(id)
+
+    if (!position) return res.status(404).send({ msg: "Position not Found" })
+
     let filtered = await employees.map(({ _doc }) => {
 
-        let { password, email, excess, department, __v, company, ...rest } = _doc;
+        let obj = {
+            yearOfEXP: _doc.yearsOfExperience,
+            title: _doc.positionTitle,
+            id: _doc._id,
+            skills: _doc.skills,
+            name: _doc.name,
+
+
+        }
         //  rest.departmentName = _doc.department?.name
 
-        return rest
+        return obj
 
     })
 
-    //   res.send(filtered)
-    const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-            { role: "system", content: "You are a recruiter with 20 years experience, head hunter with good experience in finding good employees  . You will be given a number of Employees and you'll recommend the most suitable" },
-            {
-                role: "user",
-                content: `read Employee 
+    //return    res.send(filtered)
+    try {
+        const completion = await openai.chat.completions.create({
+            model: "gpt-4o",
+            temperature:0.3,
+            messages: [
+                { role: "system", content: "You are a recruiter with 20 years experience, head hunter with good experience in finding good employees  . You will be given a number of Employees and you'll pick the most suitable" },
+                {
+                    role: "user",
+                    content: `pick the employee most fit based on the position in the qoutes below
+                      
+                    your content should only  ID of One of the employees
+                
 
-                make your recommendeation concise.
-                only return the name, the ID and the skills in this configiration 
-                {name:{name Here}, id:{Id here} , skills:[{list of skills here}] }
-                you must return atleast 1 person.
-
+                Employees : 
+                ${JSON.stringify(filtered)}
 Position : "
-We have an open position:
+position title: ${position.title}
+Department: ${position.department.name}
+Experience: ${position.experienceYears}
+Estimated : ${position.expectedSalary}
+Description : 
+${position.description}"
 
-Web Frontend Engineer - JS, CSS, React, Flutter
-Department: It
-Job Type: Full-Time
-Experience: 2 years
-Estimated Salary: 16,000 SR
-
-
-Many of our products have web front-ends. In order to create consistency across our products and sites, we have a central team that builds an open source React toolkit and presentation layer, the Vanilla Framework. We are excited to develop this further and see if we can help more open source projects build performant and accessible interfaces that respond well to diverse layouts. We use REST APIs for communication, and we consider API design an important part of the process.
-
-
-What your day will look like
-
-Write high-quality, well-designed software
-Collaborate proactively with a globally distributed team
-Display technical leadership internally and within our external communities
-Debug issues and produce high-quality code to fix them
-Contribute to technical documentation to make it the best of its kind
-Discuss ideas and collaborate on finding good solutions
-Work from home with global travel twice annually for company events
-
-What we are looking for in you
-
-An exceptional academic track record from both high school and university
-Undergraduate degree in Computer Science or STEM, or a compelling narrative about your alternative path
-Drive and a track record of going above-and-beyond expectations
-Well-organised, self-starting and able to deliver to schedule
-Professional manner interacting with colleagues, partners, and community
-Knowledge of web (HTML, CSS and JS) tech
-Fluency in Typescript, React or Flutter
-
-"
-
-Employees : 
-${JSON.stringify(employees)}
-
-
+           
+              
 
 `,
-            },
-        ],
-    });
+                },
+            ],
+        });
+        //let person = await Account.findById(completion.choices[0].message.content)
+       // if (!person) return res.status(500).send({ msg: "Erroring, chatGBT returned an invalid ID" })
+
+        return res.status(200).send(completion)
+    }
+    catch (err) { res.status(500).send({ msg: "Error getting department" }) }
+
 
     //     console.log(completion.choices);
-    return res.status(200).send(completion)
+   
 
 })
 
