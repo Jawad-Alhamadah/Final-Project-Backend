@@ -56,10 +56,15 @@ export async function getAccountById(req, res) {
         let { id } = req.params
         let accounts = await Account.findById(id).populate({
             path: 'department',   
-            populate: {          
+            populate: [{          
                 path: 'employees',
                 model: 'account'  
+            },
+            {          
+                path: 'positions',
+                model: 'position'  
             }
+        ]
         })
         // let accounts = await Account.findById(id).populate("department")
         
