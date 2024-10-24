@@ -34,9 +34,9 @@ export async function postPosition(req, res) {
     session.startTransaction();
 
     let { title, description, department, expectedSalary, experienceYears,
-        requirments, jobType } = req.body
+        requirments, jobType,skills } = req.body
 
-        console.log(jobType)
+      //  console.log(jobType)
        
     try {
         let position = new Position({
@@ -48,6 +48,7 @@ export async function postPosition(req, res) {
             requirments: requirments || "",
             jobType: jobType || "on-site",
             status: false,
+            skills
         })
         let new_position =  await position.save({session})
   
@@ -56,8 +57,7 @@ export async function postPosition(req, res) {
            await session.abortTransaction()
             return res.status(404).send({msg:"Department not found"}) 
         }
-     
-
+    
         dep.positions.push(new_position._id)
         await dep.save({session})
         await session.commitTransaction()

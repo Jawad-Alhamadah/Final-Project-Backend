@@ -12,6 +12,7 @@ let positionSchema = new mongoose.Schema(
         experienceYears:Number,
         requirments:String,
         jobType:String,
+        skills:[String],
         status:Boolean,
         company:{ ref: "company", type: mongoose.SchemaTypes.ObjectId }
     },
