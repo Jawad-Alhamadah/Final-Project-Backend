@@ -19,7 +19,7 @@ export async function getPositionById(req, res) {
 export async function getAllPositions(req, res) {
 
     try {
-        let positions = await Position.find()
+        let positions = await Position.find().populate("department")
         if (!positions) return res.status(404).send("no position found")
         res.status(200).send(positions)
 
@@ -34,7 +34,7 @@ export async function postPosition(req, res) {
     session.startTransaction();
 
     let { title, description, department, expectedSalary, experienceYears,
-        requirments, workingHours, jobType, shift } = req.body
+        requirments, jobType } = req.body
     try {
         let position = new Position({
             title: title || "No Title",
@@ -42,10 +42,8 @@ export async function postPosition(req, res) {
             department: department || "",
             expectedSalary: expectedSalary || 0,
             experienceYears: experienceYears || 0,
-            requirments: requirments || [],
-            workingHours: workingHours || 40,
+            requirments: requirments || "",
             jobType: jobType || "on-site",
-            shift: shift || "day",
             status: false,
         })
         let new_position =  await position.save({session})

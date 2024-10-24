@@ -10,13 +10,8 @@ let positionSchema = new mongoose.Schema(
         department: { ref: "department", type: mongoose.SchemaTypes.ObjectId },
         expectedSalary:Number,
         experienceYears:Number,
-        requirments:[String],
-        workingHours:{
-            type:Number,
-            required:[true,"You Must Provide working hours"]
-        },
+        requirments:String,
         jobType:String,
-        shift:String,
         status:Boolean,
         company:{ ref: "company", type: mongoose.SchemaTypes.ObjectId }
     },
