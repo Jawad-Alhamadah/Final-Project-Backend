@@ -230,7 +230,8 @@ router.get("/chat/:id", async (req, res) => {
                     role: "user",
                     content: `pick the employees most fit based on the position in the qoutes below
                       
-                    your content should only contain 3 ID of the most fit employees seperated by a comma
+                    your content should only contain 3 ID of the most fit employees seperated by a comma, NO spaces
+
                    
                 
 
@@ -253,7 +254,7 @@ ${position.description}"
         });
         // let person = await Account.findById(completion.choices[0].message.content)
         // if (!person) return res.status(500).send({ msg: "Erroring, chatGBT returned an invalid ID" })
-        let recommendations = completion.choices[0].message.content.split(", ")
+        let recommendations = completion.choices[0].message.content.split(",")
 
         let first_recommendation = await Account.findById(recommendations[0])
         let second_recommendation = await Account.findById(recommendations[1])
@@ -262,7 +263,7 @@ ${position.description}"
 
         return res.status(200).send([first_recommendation, second_recommendation, third_recommendation])
     }
-    catch (err) { res.status(500).send({ msg: "Error promphting chat GBT" }) }
+    catch (err) { console.log(err);res.status(500).send({ msg: "Error promphting chat GBT" }) }
 
 
     //     console.log(completion.choices);
