@@ -5,7 +5,7 @@ import { createAccount, getAccountById, getAllAccounts, getAccountSurplus, login
 import { deleteRequest, getAllRequests, getRequestById, postRequest, updateRequest } from "../controllers/RequestController.js";
 import { deletePosition, fillPosition, getAllPositionsByDepartment, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
 // import { getImageByName, uploadImage } from "../controllers/ImageController.js";
-import { Admin_auth, company_auth, Employee_auth, Manager_auth, verify_department } from "../authorize/authorize.js";
+import { Admin_auth, Admin_or_manager, company_auth, Employee_auth, Manager_auth, verify_department } from "../authorize/authorize.js";
 import { createCompany } from "../controllers/CompanyController.js";
 
 import OpenAI from "openai";
@@ -58,7 +58,7 @@ router.delete("/account", company_auth, Admin_auth, getAllAccounts)
 
 router.patch("/account/:id", /*company_auth, Employee_auth,*/ updateAccount)
 
-router.post("/createAccount", company_auth, Admin_auth, createAccount)
+router.post("/createAccount", company_auth, Admin_or_manager /*Admin_auth*/, createAccount)
 
 router.get("/account/surplus", company_auth, getAccountSurplus)
 

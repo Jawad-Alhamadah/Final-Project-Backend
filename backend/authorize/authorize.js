@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import Account from "../models/Account.js";
 import { ObjectId } from "mongoose"
+
 export function Admin_auth(req, res, next) {
 
     const token = req.header('Authorization');
@@ -132,3 +133,22 @@ export function General_Auth(req, res, next) {
     });
 
 }
+
+
+export function Admin_or_manager(req, res, next) {
+
+    const token = req.header('Authorization');
+    if (!token) return res.status(401).json({ error: 'Access denied: Lack of Authorization' });
+
+    jwt.verify(token, process.env.JWT_secret, async (err, account) => {
+        if (err) return res.status(401).json({ message: 'Invalid Token' });
+
+
+        let admin = await Account.findById(account.id)
+        if (admin.accountType !== "admin" && admin.accountType!=="manager") return res.status(403).json({ message: 'Acess Denied: only managers and admins can do this action' });
+        if(admin.accountType==="manager") return Manager_auth(req,res,next)
+        next()
+    });
+
+}
+
