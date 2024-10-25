@@ -285,7 +285,7 @@ export async function updateAccount(req, res) {
                  skills,
                  positionTitle,
                  aboutMe,
-                 education
+                 education,
                  excess
                 }
             
