@@ -192,7 +192,7 @@ export async function signup(req, res) {
 
 export async function createAccount_admin(req, res) {
     let companyId = req.query["company"]
-    let { email, password, name, positionTitle, accountType } = req.body
+    let { email, password, name, positionTitle, accountType,department } = req.body
 
     try {
         let old_account = await Account.findOne({ email })
@@ -203,7 +203,7 @@ export async function createAccount_admin(req, res) {
             email,
             name,
             accountType,
-            department: null,
+            department,
             excess: false, // is the person hired or not
             skills: null,
             yearsOfExperience: null,
@@ -239,7 +239,7 @@ export async function createAccount_manager(req, res) {
             email,
             name,
             accountType,
-            department: department,
+            department,
             excess: false, // is the person hired or not
             skills: null,
             yearsOfExperience: null,

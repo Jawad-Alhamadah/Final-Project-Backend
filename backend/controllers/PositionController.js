@@ -143,34 +143,33 @@ export async function fillPosition(req, res) {
     let companyId = req.query["company"]
     console.log(companyId)
     let { employeeId,positionId } = req.body
-    console.log(employeeId +" , "+positionId)
-    console.log("step1")
+
     if(!employeeId) return res.status(400).send({msg:"employee Id is empty"})
     if(!positionId) return res.status(400).send({msg:"positionId is empty"})
-    console.log("step2")
+
     const session = await mongoose.startSession(); // Start a session
     session.startTransaction(); 
 
     try {
-        console.log("step3")
+
         let position = await Position.findById(positionId).populate("department").session(session)
 
         if(!position){ 
            await session.abortTransaction()
             return res.status(404).send({msg:"position not found"})
         }
-        console.log("step4")
+
         if(position.status){ 
             await session.abortTransaction()
             return res.status(400).send({msg:"position is already full"})
         }
-        console.log("step5")
+
         let employee = await Account.findById(employeeId).populate("department").session(session)
         if(!employee){ 
             await session.abortTransaction()
             return res.status(404).send({msg:"Employee not found"})
         }
-        console.log("step6")
+        
         let oldDepartment = await Department.findById(employee.department._id).session(session)
         if(!oldDepartment){
             await session.abortTransaction()
@@ -178,37 +177,31 @@ export async function fillPosition(req, res) {
             }
     
         
-        console.log("step7")
+
         let newDepartment = await Department.findById(position.department._id).session(session)
         if(!newDepartment){
           await  session.abortTransaction()
             return res.status(404).send({msg:"Department not found"})
         }
 
-        console.log("step8")
+        
         let oldPosition = employee.positionTitle
         let oldManager = employee.department.manager
 
-        console.log("step9")
         let newPosition = position.title
         let newManager = position.department.manager
  
         
-        console.log("step10")
+
         employee.department = position.department._id
         employee.positionTitle = newPosition
         employee.excess=false
         await employee.save({session})
 
-        console.log("step11")
         newDepartment.employees.push(employee._id)
-        console.log("step12")
         newDepartment.employees = await [...new Set(newDepartment.employees)]
-        console.log("step13")
         oldDepartment.employees = await oldDepartment.employees.filter(e=>e.toString()!==employee._id.toString())
-        console.log("step14")
         oldDepartment.positions = await oldDepartment.positions.filter(p=>p.toString()!==position._id.toString())
-        console.log("step15")
         oldDepartment.surplusCount =  oldDepartment.surplusCount -1
 
         oldDepartment.empNum = oldDepartment.employees.length
@@ -216,7 +209,7 @@ export async function fillPosition(req, res) {
 
         position.status=true ;
     
-        console.log("step16")
+
         await newDepartment.save({session})
         await oldDepartment.save({session})
         await position.save({session})
@@ -231,7 +224,6 @@ export async function fillPosition(req, res) {
             company:companyId,
             date:Date.now()
         })
-        console.log("step17")
         await request.save({session})
 
         await session.commitTransaction();
