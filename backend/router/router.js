@@ -70,7 +70,7 @@ router.get("/account/type/:type", company_auth, Admin_auth, getAccountByType)
 
 router.post("/createAccount/manager", Manager_auth, createAccount_manager)
 
-router.post("/changepassword/:id",Employee_auth,changePassword)
+router.put("/changepassword/:id",Employee_auth,changePassword)
 
 // router.get("/shortage",getShortage)
 
