@@ -9,11 +9,29 @@ export async function getPositionById(req, res) {
     try {
         let { id } = req.params
         if(!id) return res.status(400).send({msg:"Id is empty"})
-        let positions = await Position.findById(id).populate(["department","manager"])
+        let positions = await Position.findById(id).populate(
+            {
+                path: 'department',   
+                populate: [{          
+                    path: 'employees',
+                    model: 'account'  
+                },
+                {          
+                    path: 'positions',
+                    model: 'position'  
+                },
+                {
+                    path: 'manager',
+                    model: 'account' 
+                }
+    
+            ]
+            }
+        )
         if (!positions) return res.status(404).send("position not found")
         return res.status(200).send(positions)
     }
-    catch (err) { res.status(500).send({ msg: "Error getting record" }) }
+    catch (err) { console.log(err);res.status(500).send({ msg: "Error getting record" }) }
 
 }
 
