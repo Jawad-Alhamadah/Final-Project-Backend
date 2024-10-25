@@ -9,13 +9,13 @@ export async function markAsExcess(req,res){
     let { id } = req.params
     let {excess} = req.body
     try{
-     
+        if(!id) return res.status(400).send({msg:"Id is empty"})
         let employee = await Account.findById(id)
         let department = await Department.findById(employee.department)
-        if(!department) res.status(404).send({msg:"department not found"})
-        if(!employee) res.status(404).send({msg:"employee Not Found"})
+        if(!department) return res.status(404).send({msg:"department not found"})
+        if(!employee) return res.status(404).send({msg:"employee Not Found"})
 
-        if(employee.excess ===excess) res.status(200).send(employee)
+        if(employee.excess ===excess) return res.status(200).send(employee)
        // employee.excess=excess
         if(excess){
             department.surplusCount = department.surplusCount +1
@@ -39,6 +39,7 @@ export async function markAsExcess(req,res){
 export async function deleteByAccount(req, res) {
     try {
         let { id } = req.params
+        if(!id) return res.status(400).send({msg:"Id is empty"})
         let accounts = await Account.findByIdAndDelete(id).populate("department")
         if (!accounts) return res.status(404).send("account not found")
         let { name, accountType, excess, department } = accounts
@@ -52,6 +53,7 @@ export async function getAccountById(req, res) {
 
     try {
         let { id } = req.params
+        if(!id) return res.status(400).send({msg:"Id is empty"})
         let accounts = await Account.findById(id).populate({
             path: 'department',   
             populate: [{          
@@ -267,7 +269,7 @@ export async function createAccount_manager(req, res) {
 export async function updateAccount(req, res) {
     let { yearsOfExperience, skills,positionTitle,aboutMe,education,excess } = req.body
     let { id } = req.params
-
+    if(!id) return res.status(400).send({msg:"Id is empty"})
     try {
         let data = {}
 
@@ -301,7 +303,7 @@ export async function updateAccount(req, res) {
 export async function changePassword(req, res) {
     let { user_password } = req.body
     let { id } = req.params
-
+    if(!id) return res.status(400).send({msg:"Id is empty"})
     try {
         if(!user_password) return res.status(404).send({msg:"the new password is empty"})
 
@@ -331,7 +333,8 @@ export async function changePassword(req, res) {
 export async function updateAccountSkills(req, res) {
     let { skill } = req.body
     let { id } = req.params
-
+    
+    if(!id) return res.status(400).send({msg:"Id is empty"})
     try {
 
         let account = await Account.findById(id)
@@ -357,7 +360,7 @@ export async function updateAccountSkills(req, res) {
 export async function deleteAccountSkills(req, res) {
     let { skill } = req.body
     let { id } = req.params
-
+    if(!id) return res.status(400).send({msg:"Id is empty"})
     try {
 
         let account = await Account.findById(id)

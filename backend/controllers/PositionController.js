@@ -8,7 +8,8 @@ import  mongoose from 'mongoose';
 export async function getPositionById(req, res) {
     try {
         let { id } = req.params
-        let positions = await Position.findById(id).populate("department")
+        if(!id) return res.status(400).send({msg:"Id is empty"})
+        let positions = await Position.findById(id).populate(["department","manager"])
         if (!positions) return res.status(404).send("position not found")
         return res.status(200).send(positions)
     }
@@ -77,6 +78,7 @@ export async function postPosition(req, res) {
 export async function updatePosition(req, res) {
     let { department, ...data } = req.body
     let { id } = req.params
+    if(!id) return res.status(400).send({msg:"Id is empty"})
 
     try {
 
@@ -94,6 +96,7 @@ export async function updatePosition(req, res) {
 
 export async function deletePosition(req, res) {
     let { id } = req.params
+    if(!id) return res.status(400).send({msg:"Id is empty"})
 
     try {
 
@@ -123,6 +126,8 @@ export async function fillPosition(req, res) {
     console.log(companyId)
     let { employeeId,positionId } = req.body
 
+    if(!employeeId) return res.status(400).send({msg:"employee Id is empty"})
+    if(!positionId) return res.status(400).send({msg:"positionId is empty"})
 
     const session = await mongoose.startSession(); // Start a session
     session.startTransaction(); 

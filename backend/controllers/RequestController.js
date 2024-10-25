@@ -12,6 +12,8 @@ export async function getAllRequests(req, res) {
 export async function getRequestById(req, res) {
     try {
         let { id } = req.params
+        if(!id) return res.status(400).send({msg:"Id is empty"})
+
         let requests = await Request.findById(id)
         if (!requests) return res.status(404).send("position request not found")
         return res.status(200).send(requests)
@@ -45,6 +47,8 @@ export async function postRequest(req, res) {
 
 export async function getRequestByAccountIdSender(req, res) {
     let { id } = req.params
+    if(!id) return res.status(400).send({msg:"Id is empty"})
+
     try {
 
         let request = Request.find({ sender: id })
@@ -59,6 +63,8 @@ export async function getRequestByAccountIdSender(req, res) {
 
 export async function getRequestByAccountIdReceiver(req, res) {
     let { id } = req.params
+    if(!id) return res.status(400).send({msg:"Id is empty"})
+        
     try {
 
         let request = Request.find({ receiver: id })
@@ -75,6 +81,7 @@ export async function getRequestByAccountIdReceiver(req, res) {
 export async function updateRequest(req, res) {
     let { senderStatus, reciverStatus } = req.body
     let { id } = req.params
+    if(!id) return res.status(400).send({msg:"Id is empty"})
     try {
 
         let request = await Request.findByIdAndUpdate(id, { senderStatus, reciverStatus }, { new: true })
@@ -89,6 +96,7 @@ export async function updateRequest(req, res) {
 
 export async function deleteRequest(req, res) {
     let { id } = req.params
+    if(!id) return res.status(400).send({msg:"Id is empty"})
 
     try {
 

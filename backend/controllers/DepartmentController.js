@@ -124,6 +124,8 @@ export async function getEmployeesByDepartmentName(req, res) {
 export async function getDepartmentById(req, res) {
     try {
         let { id } = req.params
+        if(!id) return res.status(400).send({msg:"Id is empty"})
+            
         let departments = await Department.findById(id).populate(["manager","employees","positions"])
 
 
