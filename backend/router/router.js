@@ -68,7 +68,7 @@ router.delete("/account/skill/:id", company_auth, Employee_auth, deleteAccountSk
 
 router.get("/account/type/:type", company_auth, Admin_auth, getAccountByType)
 
-router.post("/createAccount/manager",Manager_auth,createAccount_manager)
+router.post("/createAccount/manager", Manager_auth, createAccount_manager)
 
 // router.get("/shortage",getShortage)
 
@@ -221,7 +221,7 @@ router.get("/chat/:id", async (req, res) => {
     try {
         const completion = await openai.chat.completions.create({
             model: "gpt-4o",
-            temperature:0.3,
+            temperature: 0.3,
             messages: [
                 { role: "system", content: "You are a recruiter with 20 years experience, head hunter with good experience in finding good employees  . You will be given a number of Employees and you'll pick the most suitable" },
                 {
@@ -253,18 +253,18 @@ ${position.description}"
         // if (!person) return res.status(500).send({ msg: "Erroring, chatGBT returned an invalid ID" })
         let recommendations = completion.choices[0].message.content.split(", ")
 
-        let first_recommendation  = await Account.findById(recommendations[0])
-        let second_recommendation  = await Account.findById(recommendations[1])
-        let third_recommendation  = await Account.findById(recommendations[2])
+        let first_recommendation = await Account.findById(recommendations[0])
+        let second_recommendation = await Account.findById(recommendations[1])
+        let third_recommendation = await Account.findById(recommendations[2])
 
-        
-        return res.status(200).send([first_recommendation,second_recommendation,third_recommendation])
+
+        return res.status(200).send([first_recommendation, second_recommendation, third_recommendation])
     }
     catch (err) { res.status(500).send({ msg: "Error promphting chat GBT" }) }
 
 
     //     console.log(completion.choices);
-   
+
 
 })
 

@@ -69,8 +69,9 @@ export async function getAccountById(req, res) {
         // let accounts = await Account.findById(id).populate("department")
         
         if (!accounts) return res.status(404).send("account not found")
-        let { name, accountType, excess, department } = accounts
-        return res.status(200).send({ name, accountType, excess, department })
+        let {education,aboutMe, name, accountType, excess, department,skills,yearsOfExperience,positionTitle,passwordChanged } = accounts
+     
+        return res.status(200).send({education,aboutMe, name, accountType, excess, department,skills,yearsOfExperience,positionTitle,passwordChanged })
     }
     catch (err) { console.log(err); res.status(500).send({ msg: "Error getting record" }) }
 
@@ -255,12 +256,12 @@ export async function createAccount_manager(req, res) {
 
 
 export async function updateAccount(req, res) {
-    let { yearsOfExperience, skills,positionTitle } = req.body
+    let { yearsOfExperience, skills,positionTitle,aboutMe,education } = req.body
     let { id } = req.params
 
     try {
 
-        let account = await Account.findByIdAndUpdate(id, { positionTitle,yearsOfExperience, skills }, { new: true })
+        let account = await Account.findByIdAndUpdate(id, {yearsOfExperience, skills,positionTitle,aboutMe,education }, { new: true })
         let { password, __v, ...rest } = account._doc
         return res.status(200).send(rest)
 
