@@ -46,7 +46,7 @@ export default Account;
 //  name: String,
 //  email: String,
 //  password: "",
-//  accountType: {admin , manager , or Employee },
+//  accountType: {string of admin , manager , or employee  goes here},
 //  department: {department id Goes here},
 //  excess: Boolean,
 //  skills: [String],
@@ -56,7 +56,7 @@ export default Account;
 //  aboutMe: String,
 //  education: String,
 
-//  company: { ref: "company", type: mongoose.SchemaTypes.ObjectId }
+//  company: {id of company goes here}
 //  });
 // ``
 // create atleast 20, only 1 Admin
