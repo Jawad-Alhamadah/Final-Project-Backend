@@ -7,27 +7,25 @@ import Department from "../models/Department.js";
 
 export async function markAsExcess(req,res){
     let { id } = req.params
-    
+    let {excess} = req.body
     try{
      
         let employee = await Account.findById(id)
         let department = await Department.findById(employee.department)
         if(!department) res.status(404).send({msg:"department not found"})
         if(!employee) res.status(404).send({msg:"employee Not Found"})
-        
-        console.log(department.surplus)
-        if(employee.excess){
-            employee.excess= false
-            if(department)
-            department.surplusCount = department.surplusCount -1
+
+        if(employee.excess ===excess) res.status(200).send(employee)
+       // employee.excess=excess
+        if(excess){
+            department.surplusCount = department.surplusCount +1
         }
         
         else{
-            employee.excess= true
-            if(department)
-            department.surplusCount = department.surplusCount +1
+            department.surplusCount = department.surplusCount -1
         }
-        console.log(department.surplusCount )
+
+        employee.excess=excess
         await employee.save()
         await department.save()
         return res.status(200).send({department,employee})
