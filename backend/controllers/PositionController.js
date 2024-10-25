@@ -97,9 +97,12 @@ export async function deletePosition(req, res) {
 
     try {
 
-        let position = await Position.findByIdAndDelete(id)
-        return res.status(200).send(position)
 
+        let position = await Position.findByIdAndDelete(id)
+        let department = await Department.findbyId(position.department)
+        let index_of_position =  department.positions.indexof(id)
+        department.positions.splice(indexof(index_of_position),1)
+        return res.status(200).send(position)
     }
 
     catch (err) {
