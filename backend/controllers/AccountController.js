@@ -278,16 +278,14 @@ export async function updateAccount(req, res) {
         positionTitle? data.positionTitle=positionTitle : "",
         aboutMe? data.aboutMe=aboutMe : "",
         education? data.education=education : ""
-        excess? data.excess= excess : ""
+
         let account = await Account.findByIdAndUpdate(id, 
             {
                  yearsOfExperience,
                  skills,
                  positionTitle,
                  aboutMe,
-                 education,
-                 excess
-                }
+                 education }
             
             , { new: true })
         let { password, __v, ...rest } = account._doc

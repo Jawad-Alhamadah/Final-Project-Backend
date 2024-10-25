@@ -143,7 +143,7 @@ router.get("/department/:name/employees/surplus", Admin_auth, getEmployeeSurplus
 
 router.post("/department", Admin_auth, company_auth, postDepartment)
 
-router.patch("/account/excess/:id", markAsExcess)
+router.put("/account/excess/:id", markAsExcess)
 
 
 //--------------/   Department - end  /---------------/
