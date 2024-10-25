@@ -97,9 +97,9 @@ router.get("/request", getAllRequests)
 
 router.get("/request/:id", getRequestById)
 
-router.patch("/request/:id", Admin_auth, updateRequest)
+router.put("/request/:id", updateRequest)
 
-router.delete("/request/:id", Admin_auth, deleteRequest)
+router.delete("/request/:id", deleteRequest)
 
 
 
