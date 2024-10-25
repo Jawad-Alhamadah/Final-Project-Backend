@@ -290,7 +290,7 @@ export async function changePassword(req, res) {
     let { id } = req.params
 
     try {
-        if(!password) return res.status(404).send({msg:"the new password is empty"})
+        if(!user_password) return res.status(404).send({msg:"the new password is empty"})
 
         let hashed = await bcrypt.hash(user_password,10)
         let account = await Account.findById(id)
