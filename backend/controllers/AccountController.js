@@ -187,7 +187,7 @@ export async function signup(req, res) {
         let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
         res.status(200).send({ msg: "Signup sucessful", company: new_company, name: account.name, id: account._id, token: token, excess: account.excess })
     }
-    catch (err) { res.status(500).send({ msg: "Error while trying to signup" }) }
+    catch (err) { res.status(500).send({ msg: "Error while trying to signup",err:err.message}) }
 }
 
 export async function createAccount_admin(req, res) {
