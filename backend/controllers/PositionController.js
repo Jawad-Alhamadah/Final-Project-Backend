@@ -16,11 +16,11 @@ export async function getPositionById(req, res) {
 
 }
 
-export async function getAllPositions(req, res) {
-
+export async function getAllPositionsByDepartment(req, res) {
+    let {id} = req.params
     try {
-        let positions = await Position.find().populate("department")
-        if (!positions) return res.status(404).send("no position found")
+        let positions = await Position.find({department:id}).populate("department")
+        if (!positions || positions.length<=0) return res.status(404).send("no position found")
         res.status(200).send(positions)
 
     }

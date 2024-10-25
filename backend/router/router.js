@@ -3,7 +3,7 @@ import multer from "multer"
 import { postDepartment, getDepartmentById, getEmployeesByDepartmentName, getEmployeeSurplusByDepartment, getAllDepartments, getDepartmentShortage, getDepartmentSurplus } from "../controllers/DepartmentController.js";
 import { createAccount, getAccountById, getAllAccounts, getAccountSurplus, login, signup, updateAccount, updateAccountSkills, deleteAccountSkills, getAccountByType, markAsExcess } from "../controllers/AccountController.js";
 import { deleteRequest, getAllRequests, getRequestById, postRequest, updateRequest } from "../controllers/RequestController.js";
-import { deletePosition, fillPosition, getAllPositions, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
+import { deletePosition, fillPosition, getAllPositionsByDepartment, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
 // import { getImageByName, uploadImage } from "../controllers/ImageController.js";
 import { Admin_auth, company_auth, Employee_auth, Manager_auth, verify_department } from "../authorize/authorize.js";
 import { createCompany } from "../controllers/CompanyController.js";
@@ -106,7 +106,7 @@ router.delete("/request/:id", Admin_auth, deleteRequest)
 
 router.get("/position/:id", getPositionById)
 
-router.get("/position", getAllPositions)
+router.get("/position/department/:id", getAllPositionsByDepartment)
 
 router.post("/position", Manager_auth, verify_department, postPosition)
 
@@ -222,9 +222,10 @@ router.get("/chat/:id", async (req, res) => {
                 { role: "system", content: "You are a recruiter with 20 years experience, head hunter with good experience in finding good employees  . You will be given a number of Employees and you'll pick the most suitable" },
                 {
                     role: "user",
-                    content: `pick the employee most fit based on the position in the qoutes below
+                    content: `pick the employees most fit based on the position in the qoutes below
                       
-                    your content should only  ID of One of the employees
+                    your content should only contain 3 ID of the most fit employees seperated by a comma
+                   
                 
 
                 Employees : 
@@ -244,12 +245,18 @@ ${position.description}"
                 },
             ],
         });
-        //let person = await Account.findById(completion.choices[0].message.content)
-       // if (!person) return res.status(500).send({ msg: "Erroring, chatGBT returned an invalid ID" })
+        // let person = await Account.findById(completion.choices[0].message.content)
+        // if (!person) return res.status(500).send({ msg: "Erroring, chatGBT returned an invalid ID" })
+        let recommendations = completion.choices[0].message.content.split(", ")
 
-        return res.status(200).send(completion)
+        let first_recommendation  = await Account.findById(recommendations[0])
+        let second_recommendation  = await Account.findById(recommendations[1])
+        let third_recommendation  = await Account.findById(recommendations[2])
+
+        
+        return res.status(200).send([first_recommendation,second_recommendation,third_recommendation])
     }
-    catch (err) { res.status(500).send({ msg: "Error getting department" }) }
+    catch (err) { res.status(500).send({ msg: "Error promphting chat GBT" }) }
 
 
     //     console.log(completion.choices);
