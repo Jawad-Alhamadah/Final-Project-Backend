@@ -64,7 +64,7 @@ export async function getRequestByAccountIdSender(req, res) {
 export async function getRequestByAccountIdReceiver(req, res) {
     let { id } = req.params
     if(!id) return res.status(400).send({msg:"Id is empty"})
-        
+
     try {
 
         let request = Request.find({ receiver: id })
@@ -79,12 +79,20 @@ export async function getRequestByAccountIdReceiver(req, res) {
 
 
 export async function updateRequest(req, res) {
-    let { senderStatus, reciverStatus } = req.body
-    let { id } = req.params
+
+    let { id,accountID } = req.params
     if(!id) return res.status(400).send({msg:"Id is empty"})
     try {
 
-        let request = await Request.findByIdAndUpdate(id, { senderStatus, reciverStatus }, { new: true })
+        let request = await Request.findById(id)
+        if(!request) return res.status(404).send({msg:"notification not found"})
+            
+        if(accountID === request.oldManager) request.isClosedByOldManager=true
+        if(accountID === request.newManager) request.isClosedByNewManager=true
+        if(accountID === request.employeeId) request.isClosedByEmployee=true
+
+        await request.save()
+       
         return res.status(200).send(request)
     }
     catch (err) {

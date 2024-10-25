@@ -153,6 +153,7 @@ export async function fillPosition(req, res) {
     try {
 
         let position = await Position.findById(positionId).populate("department").session(session)
+       
 
         if(!position){ 
            await session.abortTransaction()
@@ -209,10 +210,12 @@ export async function fillPosition(req, res) {
 
         position.status=true ;
     
-
         await newDepartment.save({session})
+        console.log(oldDepartment)
         await oldDepartment.save({session})
+       
         await position.save({session})
+       
         let request = await new Request({
 
             employeeName: employee.name,
@@ -222,6 +225,10 @@ export async function fillPosition(req, res) {
             oldManager,
             newManager,
             company:companyId,
+            isClosedByOldManager:false,
+            isClosedByNewManager:false,
+            isClosedByEmployee:false,
+            employeeId:employee._id,
             date:Date.now()
         })
         await request.save({session})
