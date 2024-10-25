@@ -163,7 +163,9 @@ export async function signup(req, res) {
             yearsOfExperience: null,
             positionTitle: null,
             passwordChanged: true,
-            company: null
+            company: null,
+            aboutMe: "",
+            education: "",
 
         })
 
@@ -202,7 +204,9 @@ export async function createAccount_admin(req, res) {
             yearsOfExperience: null,
             positionTitle,
             passwordChanged: false,
-            company: companyId
+            company: companyId,
+            aboutMe: "",
+            education: "",
 
         })
 
@@ -236,7 +240,9 @@ export async function createAccount_manager(req, res) {
             yearsOfExperience: null,
             positionTitle,
             passwordChanged: false,
-            company: companyId
+            company: companyId,
+            aboutMe: "",
+            education: "",
 
         })
 
