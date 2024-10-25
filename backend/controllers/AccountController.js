@@ -290,10 +290,17 @@ export async function changePassword(req, res) {
     let { id } = req.params
 
     try {
+        if(!password) return res.status(404).send({msg:"the new password is empty"})
 
         let hashed = await bcrypt.hash(user_password,10)
-        let account = await Account.findByIdAndUpdate(id, {password:hashed }, { new: true })
+        let account = await Account.findById(id)
+        if(!account) return res.status(404).send({msg:"account not found"})
         
+
+        account.passwordChanged=true
+        account.password= hashed
+        
+        await account.save()
         let { password, __v, ...rest } = account._doc
         let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
         rest.token = token
