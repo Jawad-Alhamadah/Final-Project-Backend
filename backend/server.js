@@ -18,7 +18,7 @@ async function startConnection() {
 let port = process.env.BACKEND_PORT 
 const app = express()
 app.use(express.json())
-app.use("*",cors())
+app.use(cors())
 app.use(router)
 
 

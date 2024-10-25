@@ -112,7 +112,7 @@ router.get("/position/department/:id", getAllPositionsByDepartment)
 
 router.post("/position", Manager_auth, verify_department, postPosition)
 
-router.patch("/position/:id", Admin_auth, updatePosition)
+router.put("/position/:id", Admin_auth, updatePosition)
 
 router.delete("/position/:id", Admin_auth, deletePosition)
 
