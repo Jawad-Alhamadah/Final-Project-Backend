@@ -164,6 +164,7 @@ export async function fillPosition(req, res) {
         let newManager = position.department.manager
  
         
+
         employee.department = position.department._id
         employee.positionTitle = newPosition
         employee.excess=false
@@ -178,10 +179,12 @@ export async function fillPosition(req, res) {
         oldDepartment.empNum = oldDepartment.employees.length
         newDepartment.empNum = newDepartment.employees.length
 
+        position.status=true ;
     
 
         await newDepartment.save({session})
         await oldDepartment.save({session})
+        await position.save({session})
         let request = await new Request({
 
             employeeName: employee.name,
