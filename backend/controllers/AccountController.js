@@ -219,7 +219,7 @@ export async function createAccount_admin(req, res) {
         await account.save()
         res.status(200).send({ msg: "Account Created Sucessfully",accountType:account.accountType,email:account.email, company: account.company, name: account.name, id: account._id, excess: account.excess })
     }
-    catch (err) {console.log(err) ;res.status(500).send({ msg: "Error while trying to create Account" }) }
+    catch (err) {console.log(err) ;res.status(500).send({ msg: "Error while trying to create Account",err:err.message }) }
 }
 
 
@@ -267,12 +267,29 @@ export async function createAccount_manager(req, res) {
 
 
 export async function updateAccount(req, res) {
-    let { yearsOfExperience, skills,positionTitle,aboutMe,education } = req.body
+    let { yearsOfExperience, skills,positionTitle,aboutMe,education,excess } = req.body
     let { id } = req.params
 
     try {
+        let data = {}
 
-        let account = await Account.findByIdAndUpdate(id, {yearsOfExperience, skills,positionTitle,aboutMe,education }, { new: true })
+        yearsOfExperience? data.yearsOfExperience=yearsOfExperience : "",
+        skills? data.skills=skills : "",
+        positionTitle? data.positionTitle=positionTitle : "",
+        aboutMe? data.aboutMe=aboutMe : "",
+        education? data.education=education : ""
+        excess? data.excess= excess : ""
+        let account = await Account.findByIdAndUpdate(id, 
+            {
+                 yearsOfExperience,
+                 skills,
+                 positionTitle,
+                 aboutMe,
+                 education
+                 excess
+                }
+            
+            , { new: true })
         let { password, __v, ...rest } = account._doc
         return res.status(200).send(rest)
 
