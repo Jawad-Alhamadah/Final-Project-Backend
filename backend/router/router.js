@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer"
 import { postDepartment, getDepartmentById, getEmployeesByDepartmentName, getEmployeeSurplusByDepartment, getAllDepartments, getDepartmentShortage, getDepartmentSurplus } from "../controllers/DepartmentController.js";
-import { createAccount, getAccountById, getAllAccounts, getAccountSurplus, login, signup, updateAccount, updateAccountSkills, deleteAccountSkills, getAccountByType, markAsExcess } from "../controllers/AccountController.js";
+import { createAccount_admin, getAccountById, getAllAccounts, getAccountSurplus, login, signup, updateAccount, updateAccountSkills, deleteAccountSkills, getAccountByType, markAsExcess, createAccount_manager } from "../controllers/AccountController.js";
 import { deleteRequest, getAllRequests, getRequestById, postRequest, updateRequest } from "../controllers/RequestController.js";
 import { deletePosition, fillPosition, getAllPositionsByDepartment, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
 // import { getImageByName, uploadImage } from "../controllers/ImageController.js";
@@ -58,7 +58,7 @@ router.delete("/account", company_auth, Admin_auth, getAllAccounts)
 
 router.patch("/account/:id", /*company_auth, Employee_auth,*/ updateAccount)
 
-router.post("/createAccount", company_auth, Admin_or_manager /*Admin_auth*/, createAccount)
+router.post("/createAccount", company_auth, Admin_or_manager /*Admin_auth*/, createAccount_admin)
 
 router.get("/account/surplus", company_auth, getAccountSurplus)
 
@@ -67,6 +67,8 @@ router.patch("/account/skill/:id", company_auth, Employee_auth, updateAccountSki
 router.delete("/account/skill/:id", company_auth, Employee_auth, deleteAccountSkills)
 
 router.get("/account/type/:type", company_auth, Admin_auth, getAccountByType)
+
+router.post("/createAccount/manager",Manager_auth,createAccount_manager)
 
 // router.get("/shortage",getShortage)
 
@@ -140,6 +142,8 @@ router.get("/department/:name/employees/surplus", Admin_auth, getEmployeeSurplus
 router.post("/department", Admin_auth, company_auth, postDepartment)
 
 router.patch("/account/excess/:id", markAsExcess)
+
+
 //--------------/   Department - end  /---------------/
 
 router.get("/skills", getSkills)

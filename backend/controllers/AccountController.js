@@ -182,7 +182,7 @@ export async function signup(req, res) {
     catch (err) { res.status(500).send({ msg: "Error while trying to signup" }) }
 }
 
-export async function createAccount(req, res) {
+export async function createAccount_admin(req, res) {
     let companyId = req.query["company"]
     let { email, password, name, positionTitle, accountType } = req.body
 
@@ -207,6 +207,44 @@ export async function createAccount(req, res) {
 
         //let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
         await account.save()
+        res.status(200).send({ msg: "Account Created Sucessfully",accountType:account.accountType,email:account.email, company: account.company, name: account.name, id: account._id, excess: account.excess })
+    }
+    catch (err) {console.log(err) ;res.status(500).send({ msg: "Error while trying to create Account" }) }
+}
+
+
+
+
+export async function createAccount_manager(req, res) {
+    let companyId = req.query["company"]
+    let { email, password, name, positionTitle, accountType,department } = req.body
+
+    try {
+        let old_account = await Account.findOne({ email })
+        if (old_account) return res.status(400).send({ msg: "Email Already Exists" })
+        let pass =   await bcrypt.hash(password,10)
+
+        let account = new Account({
+            password:pass,
+            email,
+            name,
+            accountType,
+            department: department,
+            excess: false, // is the person hired or not
+            skills: null,
+            yearsOfExperience: null,
+            positionTitle,
+            passwordChanged: false,
+            company: companyId
+
+        })
+
+        let dep = await Department.findById(department)
+        if(!dep) return res.status(404).send({ msg: "department not found" })
+        dep.employees.push(account._id)
+        //let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
+        await account.save()
+        await dep.save()
         res.status(200).send({ msg: "Account Created Sucessfully",accountType:account.accountType,email:account.email, company: account.company, name: account.name, id: account._id, excess: account.excess })
     }
     catch (err) {console.log(err) ;res.status(500).send({ msg: "Error while trying to create Account" }) }
