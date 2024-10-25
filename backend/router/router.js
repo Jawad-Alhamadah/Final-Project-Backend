@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer"
 import { postDepartment, getDepartmentById, getEmployeesByDepartmentName, getEmployeeSurplusByDepartment, getAllDepartments, getDepartmentShortage, getDepartmentSurplus } from "../controllers/DepartmentController.js";
-import { createAccount_admin, getAccountById, getAllAccounts, getAccountSurplus, login, signup, updateAccount, updateAccountSkills, deleteAccountSkills, getAccountByType, markAsExcess, createAccount_manager } from "../controllers/AccountController.js";
+import { createAccount_admin, getAccountById, getAllAccounts, getAccountSurplus, login, signup, updateAccount, updateAccountSkills, deleteAccountSkills, getAccountByType, markAsExcess, createAccount_manager, changePassword } from "../controllers/AccountController.js";
 import { deleteRequest, getAllRequests, getRequestById, postRequest, updateRequest } from "../controllers/RequestController.js";
 import { deletePosition, fillPosition, getAllPositionsByDepartment, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
 // import { getImageByName, uploadImage } from "../controllers/ImageController.js";
@@ -56,7 +56,7 @@ router.get("/account", company_auth, Admin_auth, getAllAccounts)
 
 router.delete("/account", company_auth, Admin_auth, getAllAccounts)
 
-router.patch("/account/:id", /*company_auth, Employee_auth,*/ updateAccount)
+router.put("/account/:id", /*company_auth, Employee_auth,*/ updateAccount)
 
 router.post("/createAccount", company_auth, Admin_or_manager /*Admin_auth*/, createAccount_admin)
 
@@ -69,6 +69,8 @@ router.delete("/account/skill/:id", company_auth, Employee_auth, deleteAccountSk
 router.get("/account/type/:type", company_auth, Admin_auth, getAccountByType)
 
 router.post("/createAccount/manager", Manager_auth, createAccount_manager)
+
+router.post("/changepassword/:id",Employee_auth,changePassword)
 
 // router.get("/shortage",getShortage)
 

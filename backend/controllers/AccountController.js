@@ -285,6 +285,29 @@ export async function updateAccount(req, res) {
 }
 
 
+export async function changePassword(req, res) {
+    let { user_password } = req.body
+    let { id } = req.params
+
+    try {
+
+        let hashed = await bcrypt.hash(user_password,10)
+        let account = await Account.findByIdAndUpdate(id, {password:hashed }, { new: true })
+        
+        let { password, __v, ...rest } = account._doc
+        let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
+        rest.token = token
+        return res.status(200).send(rest)
+
+    }
+
+    catch (err) {
+        console.log(err.message); res.status(500).send({ msg: err.message })
+    }
+
+}
+
+
 export async function updateAccountSkills(req, res) {
     let { skill } = req.body
     let { id } = req.params
