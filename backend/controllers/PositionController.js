@@ -102,6 +102,8 @@ export async function deletePosition(req, res) {
         let department = await Department.findbyId(position.department)
         let index_of_position =  department.positions.indexof(id)
         department.positions.splice(indexof(index_of_position),1)
+
+        await department.save()
         return res.status(200).send(position)
     }
 
