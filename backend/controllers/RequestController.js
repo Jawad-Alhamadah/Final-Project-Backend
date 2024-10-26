@@ -86,7 +86,7 @@ export async function updateRequest(req, res) {
 
         let request = await Request.findById(id)
         if(!request) return res.status(404).send({msg:"notification not found"})
-            
+
         if(accountID === request.oldManager) request.isClosedByOldManager=true
         if(accountID === request.newManager) request.isClosedByNewManager=true
         if(accountID === request.employeeId) request.isClosedByEmployee=true
@@ -110,6 +110,31 @@ export async function deleteRequest(req, res) {
 
         let request = await Request.findByIdAndDelete(id)
         return res.status(200).send(request)
+    }
+
+    catch (err) {
+        console.log(err.message); res.status(500).send({ msg: err.message })
+    }
+
+}
+
+
+
+export async function getNotifications(req, res) {
+    let { id } = req.params
+    if(!id) return res.status(400).send({msg:"Id is empty"})
+
+    try {
+
+        let employees = await Request.find({employeeId:id})
+        let oldManager = await Request.find({oldManager:id})
+        let newManager = await Request.find({newManager:id})
+        let notifications ={
+            employees,
+            oldManager,
+            newManager
+        }
+        return res.status(200).send(notifications)
     }
 
     catch (err) {

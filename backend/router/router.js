@@ -2,7 +2,7 @@ import { Router } from "express";
 import multer from "multer"
 import { postDepartment, getDepartmentById, getEmployeesByDepartmentName, getEmployeeSurplusByDepartment, getAllDepartments, getDepartmentShortage, getDepartmentSurplus } from "../controllers/DepartmentController.js";
 import { createAccount_admin, getAccountById, getAllAccounts, getAccountSurplus, login, signup, updateAccount, updateAccountSkills, deleteAccountSkills, getAccountByType, markAsExcess, createAccount_manager, changePassword } from "../controllers/AccountController.js";
-import { deleteRequest, getAllRequests, getRequestById, postRequest, updateRequest } from "../controllers/RequestController.js";
+import { deleteRequest, getAllRequests, getNotifications, getRequestById, postRequest, updateRequest } from "../controllers/RequestController.js";
 import { deletePosition, fillPosition, getAllPositionsByDepartment, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
 // import { getImageByName, uploadImage } from "../controllers/ImageController.js";
 import { Admin_auth, Admin_or_manager, company_auth, Employee_auth, Manager_auth, verify_department } from "../authorize/authorize.js";
@@ -100,6 +100,7 @@ router.get("/request/:id", getRequestById)
 router.put("/request/:id", updateRequest)
 
 router.delete("/request/:id", deleteRequest)
+router.get("/getNotifications/:id",getNotifications)
 
 
 
