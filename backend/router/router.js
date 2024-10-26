@@ -151,7 +151,7 @@ router.put("/account/excess/:id", markAsExcess)
 
 router.get("/skills", getSkills)
 
-// router.post("/skills",postSkills)
+ router.post("/skills",postSkills)
 
 //Populate example: 
 // let requests = await  Request.find().populate({ 
