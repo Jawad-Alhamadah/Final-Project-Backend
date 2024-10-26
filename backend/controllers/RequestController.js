@@ -84,14 +84,14 @@ export async function updateRequest(req, res) {
     let {accountId} = req.body
     if(!id) return res.status(400).send({msg:"Id is empty"})
     try {
-
+        
         let request = await Request.findById(id)
         if(!request) return res.status(404).send({msg:"notification not found"})
-
-        if(accountId === request.oldManager) request.isClosedByOldManager=true
-        if(accountId === request.newManager) request.isClosedByNewManager=true
-        if(accountId === request.employeeId) request.isClosedByEmployee=true
-
+        console.log(request)
+        if(accountId === request.oldManager.toString()) request.isClosedByOldManager=true
+        if(accountId === request.newManager.toString()) request.isClosedByNewManager=true
+        if(accountId === request.employeeId.toString()) request.isClosedByEmployee=true
+    
         await request.save()
        
         return res.status(200).send(request)
