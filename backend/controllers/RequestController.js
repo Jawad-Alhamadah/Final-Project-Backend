@@ -80,16 +80,17 @@ export async function getRequestByAccountIdReceiver(req, res) {
 
 export async function updateRequest(req, res) {
 
-    let { id,accountID } = req.params
+    let { id } = req.params
+    let {accountId} = req.body
     if(!id) return res.status(400).send({msg:"Id is empty"})
     try {
 
         let request = await Request.findById(id)
         if(!request) return res.status(404).send({msg:"notification not found"})
 
-        if(accountID === request.oldManager) request.isClosedByOldManager=true
-        if(accountID === request.newManager) request.isClosedByNewManager=true
-        if(accountID === request.employeeId) request.isClosedByEmployee=true
+        if(accountId === request.oldManager) request.isClosedByOldManager=true
+        if(accountId === request.newManager) request.isClosedByNewManager=true
+        if(accountId === request.employeeId) request.isClosedByEmployee=true
 
         await request.save()
        
