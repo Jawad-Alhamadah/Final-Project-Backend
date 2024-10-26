@@ -28,7 +28,7 @@ export async function getAllDepartments(req, res) {
         if (!departments || departments.length <= 0) return res.status(404).send({ msg: "no department found" })
         res.status(200).send(departments)
     }
-    catch (err) { res.status(500).send({ msg: "Error getting department" }) }
+    catch (err) {   console.log(err.message);res.status(500).send({ msg: "Error getting department" }) }
 
 
 }
@@ -132,7 +132,7 @@ export async function getDepartmentById(req, res) {
         if (!departments) return res.status(404).send("department not found")
         res.status(200).send(departments)
     }
-    catch (err) { res.status(500).send({ msg: "Error getting record" }) }
+    catch (err) {   console.log(err.message);res.status(500).send({ msg: "Error getting record" }) }
 
 }
 

@@ -130,7 +130,7 @@ export async function getAccountSurplus(req, res) {
         return res.send(accounts)
     }
 
-    catch (err) { console.log(err); res.status(500).send({ msg: "Error getting record" }) }
+    catch (err) { console.log(err.message); res.status(500).send({ msg: "Error getting record" }) }
 
 }
 
@@ -146,7 +146,7 @@ export async function login(req, res) {
         let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
         res.status(200).send({ msg: "login succesful", id: account.id, accountType:account.accountType, department: account.department, company: account.company, name: account.name, token: token, excess: account.excess })
     }
-    catch (err) { res.status(500).send({ msg: "Error while trying to login" }) }
+    catch (err) {   console.log(err.message);res.status(500).send({ msg: "Error while trying to login" }) }
 
 }
 
@@ -187,7 +187,7 @@ export async function signup(req, res) {
         let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
         res.status(200).send({ msg: "Signup sucessful", company: new_company, name: account.name, id: account._id, token: token, excess: account.excess })
     }
-    catch (err) { res.status(500).send({ msg: "Error while trying to signup",err:err.message}) }
+    catch (err) {  console.log(err.message) ;res.status(500).send({ msg: "Error while trying to signup",err:err.message}) }
 }
 
 export async function createAccount_admin(req, res) {
@@ -219,7 +219,7 @@ export async function createAccount_admin(req, res) {
         await account.save()
         res.status(200).send({ msg: "Account Created Sucessfully",accountType:account.accountType,email:account.email, company: account.company, name: account.name, id: account._id, excess: account.excess })
     }
-    catch (err) {console.log(err) ;res.status(500).send({ msg: "Error while trying to create Account",err:err.message }) }
+    catch (err) {  console.log(err.message) ;res.status(500).send({ msg: "Error while trying to create Account",err:err.message }) }
 }
 
 
@@ -259,7 +259,10 @@ export async function createAccount_manager(req, res) {
         await dep.save()
         res.status(200).send({ msg: "Account Created Sucessfully",accountType:account.accountType,email:account.email, company: account.company, name: account.name, id: account._id, excess: account.excess })
     }
-    catch (err) {console.log(err) ;res.status(500).send({ msg: "Error while trying to create Account" }) }
+    catch (err) {
+        console.log(err.message) ;
+        res.status(500).send({ msg: "Error while trying to create Account" }) 
+    }
 }
 
 

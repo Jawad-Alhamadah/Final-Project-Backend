@@ -43,7 +43,7 @@ export async function getAllPositionsByDepartment(req, res) {
         res.status(200).send(positions)
 
     }
-    catch (err) { res.status(500).send({ msg: "Error getting position" }) }
+    catch (err) {   console.log(err.message);res.status(500).send({ msg: "Error getting position" }) }
 }
 
 export async function postPosition(req, res) {
@@ -120,9 +120,10 @@ export async function deletePosition(req, res) {
 
 
         let position = await Position.findByIdAndDelete(id)
-        let department = await Department.findbyId(position.department)
-        let index_of_position =  department.positions.indexof(id)
-        department.positions.splice(indexof(index_of_position),1)
+        let department = await Department.findById(position.department)
+
+        let index_of_position =  department.positions.indexOf(id)
+        department.positions.splice(index_of_position,1)
 
         await department.save()
         return res.status(200).send(position)

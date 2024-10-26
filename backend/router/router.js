@@ -14,7 +14,7 @@ import dotenv from 'dotenv'
 import Account from "../models/Account.js";
 import Department from "../models/Department.js";
 import Skills from "../models/Skills.js";
-import { getSkills } from "../controllers/SkillsController.js";
+import { getSkills, postSkills } from "../controllers/SkillsController.js";
 import Position from "../models/Position.js";
 dotenv.config()
 const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
@@ -150,6 +150,8 @@ router.put("/account/excess/:id", markAsExcess)
 //--------------/   Department - end  /---------------/
 
 router.get("/skills", getSkills)
+
+// router.post("/skills",postSkills)
 
 //Populate example: 
 // let requests = await  Request.find().populate({ 
