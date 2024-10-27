@@ -19,13 +19,7 @@ import Position from "../models/Position.js";
 dotenv.config()
 const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
 
-
-
-
-
-
 const upload = multer({ dest: 'uploads/' })
-
 
 const router = Router()
 
@@ -72,28 +66,12 @@ router.post("/createAccount/manager", Manager_auth, createAccount_manager)
 
 router.put("/account/changepassword/:id",Employee_auth,changePassword)
 
-// router.get("/shortage",getShortage)
-
-// router.get("/updateAccounts",async (req,res)=>{
-//  await Request.updateMany({},{company:"671639be3a7e27df2d3fcaff"})
-//  await Position.updateMany({},{company:"671639be3a7e27df2d3fcaff"})
-//  await Department.updateMany({},{company:"671639be3a7e27df2d3fcaff"})
-//  res.send("done")
-// })
-
-
-
 //--------------/    Account and login - end  /---------------/
 
 //--------------/    Request    /---------------/
 
 router.get("/request", getAllRequests)
 
-// router.get("/request/account/:id/sender", getRequestByAccountIdSender)
-
-// router.get("/request/account/:id/receiver", getRequestByAccountIdReceiver)
-
-//router.post("/request", postRequest)
 
 router.get("/request/:id", getRequestById)
 
@@ -130,10 +108,6 @@ router.get("/department", getAllDepartments)
 
 router.get("/department/id/:id", getDepartmentById)
 
-// router.get("/department/shortage", getDepartmentsWithShortage)
-
-// router.get("/department/surplus", getDepartmentsWithSurplus)
-
 router.get("/department/shortage", Admin_auth, getDepartmentShortage)
 
 router.get("/department/surplus", Admin_auth, getDepartmentSurplus)
@@ -153,55 +127,12 @@ router.get("/skills", getSkills)
 
  router.post("/skills",postSkills)
 
-//Populate example: 
-// let requests = await  Request.find().populate({ 
-//     path: 'sender',
-//     populate: {
-//       path: 'department',
-//       model: 'department'
-//     } 
-//  })
-
-// let employees = await Account.aggregate([
-//     {
-//       $lookup: {
-//         from: 'departments', 
-//         localField: 'department',
-//         foreignField: '_id',
-//         as: 'departmentDetails'
-//       }
-//     },
-//     {
-//       $unwind: {
-//         path: '$departmentDetails',
-//         preserveNullAndEmptyArrays: true 
-//       }
-//     },
-//     {
-//       $match: {
-//         'departmentDetails.name': name,
-//         accountType: "employee"
-
-//       }
-//     }
-//   ]);
-
-// router.patch("/updateAccounts", async (req, res) => {
-
-//     let new_skill = new Skills({skills})
-//     await new_skill.save()
-
-//    // let accounts = await Department.updateMany({ aboutMe: "", description: "" })
-//     res.send(new_skill)
-
-
-// })
-
 router.get("/chat/:id", async (req, res) => {
     //gpt-4o
     let { id } = req.params //id Of Position
     let employees = await Account.find({ accountType: "employee", excess: true }).populate("department")
     let position = await Position.findById(id)
+    console.log(employees)
 
     if (!position) return res.status(404).send({ msg: "Position not Found" })
 
@@ -209,7 +140,7 @@ router.get("/chat/:id", async (req, res) => {
 
         let obj = {
             yearOfEXP: _doc.yearsOfExperience,
-            title: _doc.positionTitle,
+            currentJob: _doc.positionTitle,
             id: _doc._id,
             skills: _doc.skills,
             name: _doc.name,
@@ -222,6 +153,8 @@ router.get("/chat/:id", async (req, res) => {
 
     })
 
+    console.log(position)
+    console.log(filtered)
     //return    res.send(filtered)
     try {
         const completion = await openai.chat.completions.create({
@@ -231,12 +164,8 @@ router.get("/chat/:id", async (req, res) => {
                 { role: "system", content: "You are a recruiter with 20 years experience, head hunter with good experience in finding good employees  . You will be given a number of Employees and you'll pick the most suitable" },
                 {
                     role: "user",
-                    content: `pick the employees most fit based on the position in the qoutes below
-                      
+                    content: `pick the employees most fit based on the position in the qoutes below                      
                     your content should only contain 3 ID of the most fit employees seperated by a comma, NO spaces
-
-                   
-                
 
                 Employees : 
                 ${JSON.stringify(filtered)}
@@ -248,8 +177,8 @@ Estimated : ${position.expectedSalary}
 Description : 
 ${position.description}"
 
-           
-              
+
+i'll reitirate, you must return atleast one employee ID as a recommendation.
 
 `,
                 },
@@ -258,7 +187,7 @@ ${position.description}"
         // let person = await Account.findById(completion.choices[0].message.content)
         // if (!person) return res.status(500).send({ msg: "Erroring, chatGBT returned an invalid ID" })
         let recommendations = completion.choices[0].message.content.split(",")
-
+        console.log("content: "+completion.choices[0].message.content)
         let first_recommendation = await Account.findById(recommendations[0])
         let second_recommendation = await Account.findById(recommendations[1])
         let third_recommendation = await Account.findById(recommendations[2])
@@ -267,10 +196,6 @@ ${position.description}"
         return res.status(200).send([first_recommendation, second_recommendation, third_recommendation])
     }
     catch (err) { console.log(err);res.status(500).send({ msg: "Error promphting chat GBT" }) }
-
-
-    //     console.log(completion.choices);
-
 
 })
 
