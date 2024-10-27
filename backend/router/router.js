@@ -165,7 +165,8 @@ router.get("/chat/:id", async (req, res) => {
                 {
                     role: "user",
                     content: `pick the employees most fit based on the position in the qoutes below                      
-                    your content should only contain 3 ID of the most fit employees seperated by a comma, NO spaces
+                 your content should only contain 3 ID of the most fit employees seperated by a comma, NO spaces
+                 you must return atleast one employee ID as a recommendation.
 
                 Employees : 
                 ${JSON.stringify(filtered)}
@@ -176,7 +177,6 @@ Experience: ${position.experienceYears}
 Estimated : ${position.expectedSalary}
 Description : 
 ${position.description}"
-
 
 i'll reitirate, you must return atleast one employee ID as a recommendation.
 
