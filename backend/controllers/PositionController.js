@@ -47,7 +47,7 @@ export async function getAllPositionsByDepartment(req, res) {
 }
 
 export async function postPosition(req, res) {
-
+    let companyId = req.query["company"]
 
     let session = await mongoose.startSession()
     session.startTransaction();
@@ -67,7 +67,8 @@ export async function postPosition(req, res) {
             requirments: requirments || "",
             jobType: jobType || "on-site",
             status: false,
-            skills
+            skills,
+            company:companyId
         })
         let new_position =  await position.save({session})
   
@@ -171,7 +172,9 @@ export async function fillPosition(req, res) {
             await session.abortTransaction()
             return res.status(404).send({msg:"Employee not found"})
         }
-        
+        console.log("department Id :  "+ employee.department._id)
+        console.log("Employee Id:  "+ employeeId)
+        console.log("position Id:  "+ positionId)
         let oldDepartment = await Department.findById(employee.department._id).session(session)
         if(!oldDepartment){
             await session.abortTransaction()
@@ -179,14 +182,16 @@ export async function fillPosition(req, res) {
             }
     
         
-
+            
+        console.log("here 1")
         let newDepartment = await Department.findById(position.department._id).session(session)
         if(!newDepartment){
           await  session.abortTransaction()
             return res.status(404).send({msg:"Department not found"})
         }
 
-        
+        console.log("here 2")
+
         let oldPosition = employee.positionTitle
         let oldManager = employee.department.manager
 
@@ -194,29 +199,40 @@ export async function fillPosition(req, res) {
         let newManager = position.department.manager
  
         
+        console.log("here 3")
 
         employee.department = position.department._id
         employee.positionTitle = newPosition
         employee.excess=false
         await employee.save({session})
 
+        console.log("here 4")
+
+        console.log(oldDepartment)
         newDepartment.employees.push(employee._id)
         newDepartment.employees = await [...new Set(newDepartment.employees)]
         oldDepartment.employees = await oldDepartment.employees.filter(e=>e.toString()!==employee._id.toString())
-        oldDepartment.positions = await oldDepartment.positions.filter(p=>p.toString()!==position._id.toString())
+        //oldDepartment.positions = await oldDepartment.positions.filter(p=>p.toString()!==position._id.toString())
+        newDepartment.positions = await newDepartment.positions.filter(p=>p.toString()!==position._id.toString())
         oldDepartment.surplusCount =  oldDepartment.surplusCount -1
-
+        
         oldDepartment.empNum = oldDepartment.employees.length
         newDepartment.empNum = newDepartment.employees.length
+
+
+        console.log("here 5")
 
         position.status=true ;
     
         await newDepartment.save({session})
         console.log(oldDepartment)
+        console.log("here 6")
         await oldDepartment.save({session})
-       
+        console.log("here 7")
         await position.save({session})
-       
+        console.log("here 8")
+        
+
         let request = await new Request({
 
             employeeName: employee.name,

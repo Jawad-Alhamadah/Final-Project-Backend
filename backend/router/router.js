@@ -6,7 +6,7 @@ import { deleteRequest, getAllRequests, getNotifications, getRequestById, postRe
 import { deletePosition, fillPosition, getAllPositionsByDepartment, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
 // import { getImageByName, uploadImage } from "../controllers/ImageController.js";
 import { Admin_auth, Admin_or_manager, company_auth, Employee_auth, Manager_auth, verify_department } from "../authorize/authorize.js";
-import { createCompany } from "../controllers/CompanyController.js";
+import { createCompany, getAllNotificationsByCompany, getAllPositionsByCompany } from "../controllers/CompanyController.js";
 
 import OpenAI from "openai";
 
@@ -26,6 +26,8 @@ const router = Router()
 //--------------/    company   /---------------/
 
 // router.post("/company", createCompany)
+router.get("/company/:id/notification", getAllNotificationsByCompany)
+router.get("/company/:id/position", getAllPositionsByCompany)
 
 //--------------/    company  /---------------/
 
@@ -64,7 +66,7 @@ router.get("/account/type/:type", company_auth, Admin_auth, getAccountByType)
 
 router.post("/createAccount/manager", Manager_auth, createAccount_manager)
 
-router.put("/account/changepassword/:id",Employee_auth,changePassword)
+router.put("/account/changepassword/:id", Employee_auth, changePassword)
 
 //--------------/    Account and login - end  /---------------/
 
@@ -78,7 +80,7 @@ router.get("/request/:id", getRequestById)
 router.put("/request/:id", updateRequest)
 
 router.delete("/request/:id", deleteRequest)
-router.get("/getNotifications/:id",getNotifications)
+router.get("/getNotifications/:id", getNotifications)
 
 
 
@@ -125,16 +127,18 @@ router.put("/account/excess/:id", markAsExcess)
 
 router.get("/skills", getSkills)
 
- router.post("/skills",postSkills)
+router.post("/skills", postSkills)
 
 router.get("/chat/:id", async (req, res) => {
     //gpt-4o
     let { id } = req.params //id Of Position
-    let employees = await Account.find({ accountType: "employee", excess: true }).populate("department")
+   
     let position = await Position.findById(id)
-    console.log(employees)
-
     if (!position) return res.status(404).send({ msg: "Position not Found" })
+    console.log(position.department.toString())
+    let employees = await Account.find({ accountType: "employee", excess: true ,department:{$ne:position.department.toString()}}).populate("department")
+    if (!employees || employees.length<=0) return res.status(404).send({ msg: "no surplus employees found" })
+      
 
     let filtered = await employees.map(({ _doc }) => {
 
@@ -147,12 +151,10 @@ router.get("/chat/:id", async (req, res) => {
 
 
         }
-        //  rest.departmentName = _doc.department?.name
-
-        return obj
-
+            return obj
     })
 
+    console.log(filtered.length)
     console.log(position)
     console.log(filtered)
     //return    res.send(filtered)
@@ -187,7 +189,7 @@ i'll reitirate, you must return atleast one employee ID as a recommendation.
         // let person = await Account.findById(completion.choices[0].message.content)
         // if (!person) return res.status(500).send({ msg: "Erroring, chatGBT returned an invalid ID" })
         let recommendations = completion.choices[0].message.content.split(",")
-        console.log("content: "+completion.choices[0].message.content)
+        console.log("content: " + completion.choices[0].message.content)
         let first_recommendation = await Account.findById(recommendations[0])
         let second_recommendation = await Account.findById(recommendations[1])
         let third_recommendation = await Account.findById(recommendations[2])
@@ -195,7 +197,7 @@ i'll reitirate, you must return atleast one employee ID as a recommendation.
 
         return res.status(200).send([first_recommendation, second_recommendation, third_recommendation])
     }
-    catch (err) { console.log(err);res.status(500).send({ msg: "Error promphting chat GBT" }) }
+    catch (err) { console.log(err); res.status(500).send({ msg: "Error promphting chat GBT" }) }
 
 })
 
