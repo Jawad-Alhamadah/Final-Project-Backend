@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken"
 import Company from "../models/Company.js";
 import Department from "../models/Department.js";
 
+import dotenv from 'dotenv'
+dotenv.config()
 
 export async function markAsExcess(req,res){
     let { id } = req.params
