@@ -1,7 +1,6 @@
 import express from "express"
 import mongoose from "mongoose"
 import dotenv from 'dotenv'
-
 import router from "./router/router.js"
 import cors from "cors"
 import skillsRouter from "./router/SkillsRouter.js"
@@ -10,7 +9,6 @@ import positionRouter from "./router/PositionRouter.js"
 import requestRouter from "./router/RequestRouter.js"
 import accountRouter from "./router/AccountRouter.js"
 import chatRouter from "./router/ChatRouter.js"
-
 
 dotenv.config()
 
@@ -35,6 +33,3 @@ app.use("/account",accountRouter)
 app.use("/chat",chatRouter)
 
 app.listen(port || 7000, () => console.log(`listening to ${port || 7000}`))
-
-
-

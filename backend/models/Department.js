@@ -2,19 +2,19 @@ import mongoose from "mongoose"
 
 let departmentSchema = new mongoose.Schema(
     {
-        name:{
-            type:String,
+        name: {
+            type: String,
             unique: [true, "Department already exists"]
         },
         empNum: Number,
         status: String,
         manager: { ref: "account", type: mongoose.SchemaTypes.ObjectId },
         employees: [{ ref: "account", type: mongoose.SchemaTypes.ObjectId }],
-        neededEmployees:[String],
+        neededEmployees: [String],
         positions: [{ ref: "position", type: mongoose.SchemaTypes.ObjectId }],
-        surplusCount:Number,
-        company:{ ref: "company", type: mongoose.SchemaTypes.ObjectId }
-        
+        surplusCount: Number,
+        company: { ref: "company", type: mongoose.SchemaTypes.ObjectId }
+
     },
 
 )

@@ -1,12 +1,12 @@
-import { deletePosition, fillPosition, getAllPositionsByDepartment, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
-import { Admin_auth, Admin_or_manager, company_auth, Employee_auth, Manager_auth, verify_department } from "../authorize/authorize.js";
+import { deletePosition, getAllPositionsByDepartment, getPositionById, postPosition, updatePosition } from "../controllers/PositionController.js";
+import { Manager_auth, verify_department } from "../authorize/authorize.js";
 
 import { Router } from "express";
 
 const router = Router()
 
 
- //  /position 
+//  /position 
 router.get("/:id", getPositionById)
 
 router.get("/department/:id", getAllPositionsByDepartment)

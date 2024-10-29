@@ -5,20 +5,20 @@ export async function getAllRequests(req, res) {
         if (!requests) return res.status(404).send("no position request found")
         res.status(200).send(requests)
     }
-    catch (err) {   console.log(err.message);res.status(500).send({ msg: "Error getting notification request" }) }
+    catch (err) { console.log(err.message); res.status(500).send({ msg: "Error getting notification request" }) }
 
 }
 
 export async function getRequestById(req, res) {
     try {
         let { id } = req.params
-        if(!id) return res.status(400).send({msg:"Id is empty"})
+        if (!id) return res.status(400).send({ msg: "Id is empty" })
 
         let requests = await Request.findById(id)
         if (!requests) return res.status(404).send("position request not found")
         return res.status(200).send(requests)
     }
-    catch (err) {   console.log(err.message);res.status(500).send({ msg: "Error getting record" }) }
+    catch (err) { console.log(err.message); res.status(500).send({ msg: "Error getting record" }) }
 
 }
 
@@ -47,7 +47,7 @@ export async function postRequest(req, res) {
 
 export async function getRequestByAccountIdSender(req, res) {
     let { id } = req.params
-    if(!id) return res.status(400).send({msg:"Id is empty"})
+    if (!id) return res.status(400).send({ msg: "Id is empty" })
 
     try {
 
@@ -63,7 +63,7 @@ export async function getRequestByAccountIdSender(req, res) {
 
 export async function getRequestByAccountIdReceiver(req, res) {
     let { id } = req.params
-    if(!id) return res.status(400).send({msg:"Id is empty"})
+    if (!id) return res.status(400).send({ msg: "Id is empty" })
 
     try {
 
@@ -81,18 +81,18 @@ export async function getRequestByAccountIdReceiver(req, res) {
 export async function updateRequest(req, res) {
 
     let { id } = req.params
-    let {accountId} = req.body
-    if(!id) return res.status(400).send({msg:"Id is empty"})
+    let { accountId } = req.body
+    if (!id) return res.status(400).send({ msg: "Id is empty" })
     try {
-        
+
         let request = await Request.findById(id)
-        if(!request) return res.status(404).send({msg:"notification not found"})
-        if(accountId === request.oldManager.toString()) request.isClosedByOldManager=true
-        if(accountId === request.newManager.toString()) request.isClosedByNewManager=true
-        if(accountId === request.employeeId.toString()) request.isClosedByEmployee=true
-    
+        if (!request) return res.status(404).send({ msg: "notification not found" })
+        if (accountId === request.oldManager.toString()) request.isClosedByOldManager = true
+        if (accountId === request.newManager.toString()) request.isClosedByNewManager = true
+        if (accountId === request.employeeId.toString()) request.isClosedByEmployee = true
+
         await request.save()
-       
+
         return res.status(200).send(request)
     }
     catch (err) {
@@ -104,7 +104,7 @@ export async function updateRequest(req, res) {
 
 export async function deleteRequest(req, res) {
     let { id } = req.params
-    if(!id) return res.status(400).send({msg:"Id is empty"})
+    if (!id) return res.status(400).send({ msg: "Id is empty" })
 
     try {
 
@@ -122,14 +122,14 @@ export async function deleteRequest(req, res) {
 
 export async function getNotifications(req, res) {
     let { id } = req.params
-    if(!id) return res.status(400).send({msg:"Id is empty"})
+    if (!id) return res.status(400).send({ msg: "Id is empty" })
 
     try {
 
-        let employees = await Request.find({employeeId:id})
-        let oldManager = await Request.find({oldManager:id})
-        let newManager = await Request.find({newManager:id})
-        let notifications ={
+        let employees = await Request.find({ employeeId: id })
+        let oldManager = await Request.find({ oldManager: id })
+        let newManager = await Request.find({ newManager: id })
+        let notifications = {
             employees,
             oldManager,
             newManager

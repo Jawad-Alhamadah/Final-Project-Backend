@@ -1,5 +1,5 @@
 import { postDepartment, getDepartmentById, getEmployeesByDepartmentName, getEmployeeSurplusByDepartment, getAllDepartments, getDepartmentShortage, getDepartmentSurplus } from "../controllers/DepartmentController.js";
-import { Admin_auth, Admin_or_manager, company_auth, Employee_auth, Manager_auth, verify_department } from "../authorize/authorize.js";
+import { Admin_auth,company_auth} from "../authorize/authorize.js";
 
 import { Router } from "express";
 

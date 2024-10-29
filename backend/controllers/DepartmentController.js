@@ -1,7 +1,7 @@
 import Department from "../models/Department.js";
 import Account from "../models/Account.js";
 
-import  mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 
 export async function getEmployeeSurplusByDepartment(req, res) {
@@ -24,11 +24,11 @@ export async function getAllDepartments(req, res) {
     console.log(companyId)
     try {
         let departments = await Department.find({ company: companyId }).populate("manager").populate("positions")
-        
+
         if (!departments || departments.length <= 0) return res.status(404).send({ msg: "no department found" })
         res.status(200).send(departments)
     }
-    catch (err) {   console.log(err.message);res.status(500).send({ msg: "Error getting department" }) }
+    catch (err) { console.log(err.message); res.status(500).send({ msg: "Error getting department" }) }
 
 
 }
@@ -40,7 +40,7 @@ export async function postDepartment(req, res) {
 
     let session = await mongoose.startSession()
     session.startTransaction();
-    
+
     try {
 
 
@@ -52,19 +52,19 @@ export async function postDepartment(req, res) {
         }
 
         let check_manager = await Account.findById(manager).session(session)
-        if (!check_manager){
+        if (!check_manager) {
             await session.abortTransaction()
             return res.status(400).send({ msg: "account not found" })
-        } 
-       
-        if(check_manager.accountType!=="manager"){
+        }
+
+        if (check_manager.accountType !== "manager") {
             await session.abortTransaction()
             return res.status(400).send({ msg: "Account is not a manager" })
         }
-        if (check_manager.department){
+        if (check_manager.department) {
             await session.abortTransaction()
             return res.status(400).send({ msg: "Already a manager of a different department" })
-        } 
+        }
 
         let new_department = await new Department({
             name,
@@ -74,23 +74,23 @@ export async function postDepartment(req, res) {
             neededEmployees: [],
             positions: [],
             company: companyId,
-            surplusCount:0
+            surplusCount: 0
         })
 
         check_manager.department = new_department._id
 
-        await new_department.save({session})
-        await check_manager.save({session})
+        await new_department.save({ session })
+        await check_manager.save({ session })
         await session.commitTransaction()
 
         return res.status(200).send(new_department)
 
     }
-    catch (err) { 
+    catch (err) {
         await session.abortTransaction()
-        return res.status(500).send({ msg: "error creating department" }) 
+        return res.status(500).send({ msg: "error creating department" })
     }
-    finally{
+    finally {
         session.endSession()
     }
 
@@ -124,15 +124,15 @@ export async function getEmployeesByDepartmentName(req, res) {
 export async function getDepartmentById(req, res) {
     try {
         let { id } = req.params
-        if(!id) return res.status(400).send({msg:"Id is empty"})
-            
-        let departments = await Department.findById(id).populate(["manager","employees","positions"])
+        if (!id) return res.status(400).send({ msg: "Id is empty" })
+
+        let departments = await Department.findById(id).populate(["manager", "employees", "positions"])
 
 
         if (!departments) return res.status(404).send("department not found")
         res.status(200).send(departments)
     }
-    catch (err) {   console.log(err.message);res.status(500).send({ msg: "Error getting record" }) }
+    catch (err) { console.log(err.message); res.status(500).send({ msg: "Error getting record" }) }
 
 }
 

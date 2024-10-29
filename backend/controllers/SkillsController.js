@@ -1,13 +1,13 @@
 import Skills from "../models/Skills.js";
 
-export  async function getSkills(req,res){
-    
+export async function getSkills(req, res) {
+
     let skills = await Skills.findOne()
     res.status(200).send(skills)
 }
 
 
-export async function postSkills(req,res){
+export async function postSkills(req, res) {
     const skills = [
         "Communication",
         "Leadership",
@@ -39,11 +39,11 @@ export async function postSkills(req,res){
         "Customer Relationship Management (CRM)",
         "Supply Chain Management"
     ];
-    
-     let sk = new Skills({
-        skills
-     })
 
-     await sk.save()
-     res.send(sk)
+    let sk = new Skills({
+        skills
+    })
+
+    await sk.save()
+    res.send(sk)
 }

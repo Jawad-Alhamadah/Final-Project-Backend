@@ -1,7 +1,7 @@
 
 
 import admin from 'firebase-admin'
-import  serviceAccount from '../../final-project-1b8b6-firebase-adminsdk-ygxud-1484d01997.json' assert { type: 'json' };
+import serviceAccount from '../../final-project-1b8b6-firebase-adminsdk-ygxud-1484d01997.json' assert { type: 'json' };
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: 'final-project-1b8b6.appspot.com'
@@ -14,10 +14,6 @@ const bucket = admin.storage().bucket();
 export async function uploadImage(req, res) {
     let file_path = req.file.path
     let file_destination = `${Date.now()}_${req.file.originalname}}`
-
-
-
-
     try {
         let result = await bucket.upload(file_path, {
             file_destination,
@@ -26,9 +22,6 @@ export async function uploadImage(req, res) {
                 cacheControl: 'public,max-age=31536000',
             },
         })
-
-
-
 
         let name = result[0].metadata.name
         console.log(file_destination)
@@ -65,7 +58,6 @@ export async function getImageByName(req, res) {
         if (!exists) {
             return res.status(404).send({ message: 'Image not found' });
         }
-
 
         const options = {
             version: 'v2',

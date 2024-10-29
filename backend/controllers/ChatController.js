@@ -16,7 +16,6 @@ export async function recommendEmployees (req, res) {
     let employees = await Account.find({ accountType: "employee", excess: true ,department:{$ne:position.department.toString()}}).populate("department")
     if (!employees || employees.length<=0) return res.status(404).send({ msg: "no surplus employees found" })
       
-
     let filtered = await employees.map(({ _doc }) => {
 
         let obj = {
@@ -30,9 +29,7 @@ export async function recommendEmployees (req, res) {
         }
             return obj
     })
-
-
-    
+   
     try {
         const completion = await openai.chat.completions.create({
             model: "gpt-4o",
@@ -55,7 +52,6 @@ Estimated : ${position.expectedSalary}
 Description : 
 ${position.description}"
 
-
 `,
                 },
             ],
@@ -65,7 +61,6 @@ ${position.description}"
         let first_recommendation = await Account.findById(recommendations[0])
         let second_recommendation = await Account.findById(recommendations[1])
         let third_recommendation = await Account.findById(recommendations[2])
-
 
         return res.status(200).send([first_recommendation, second_recommendation, third_recommendation])
     }
