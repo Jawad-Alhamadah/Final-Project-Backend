@@ -19,17 +19,17 @@ async function startConnection() {
     console.log("connected to Mongoose")
 }
 
-let port = process.env.BACKEND_PORT 
+let port = process.env.BACKEND_PORT
 const app = express()
 app.use(express.json())
 app.use(cors())
-app.use(router)
 
-app.use("/skills",skillsRouter)
-app.use("/department",departmentRouter)
-app.use("/position",positionRouter)
-app.use("/request",requestRouter)
-app.use("/account",accountRouter)
-app.use("/chat",chatRouter)
+app.use(router)
+app.use("/skills", skillsRouter)
+app.use("/department", departmentRouter)
+app.use("/position", positionRouter)
+app.use("/request", requestRouter)
+app.use("/account", accountRouter)
+app.use("/chat", chatRouter)
 
 app.listen(port || 7000, () => console.log(`listening to ${port || 7000}`))
