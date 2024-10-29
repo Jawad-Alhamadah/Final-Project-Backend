@@ -78,7 +78,14 @@ router.post("/temporaryPassword",async (req,res)=>{
             account.passwordChanged=false
             account.password = randomhashPassword
 
-            await account.save()
+            try{
+                await account.save()
+
+                res.status(200).send({msg:"email sent"})
+            }catch(err){
+                console.log(err.message); res.status(500).send({ msg:"cant save password", err:err.message })
+            }
+            
         }
     })
 
