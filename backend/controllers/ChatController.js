@@ -32,17 +32,18 @@ export async function recommendEmployees (req, res) {
     })
 
 
+    
     try {
         const completion = await openai.chat.completions.create({
             model: "gpt-4o",
             temperature: 0.3,
             messages: [
-                { role: "system", content: "You are a recruiter with 20 years experience, head hunter with good experience in finding good employees  . You will be given a number of Employees and you'll pick the most suitable" },
+                { role: "system", content: "you are a seasoned recruiter with 20 years of experience and a successful track record as a headhunter. Your task is to review a list of employees and order them for suitability" },
                 {
                     role: "user",
-                    content: `pick the employees most fit based on the position in the qoutes below                      
-                 your content should only contain 3 ID of the most fit employees seperated by a comma, NO spaces
-                 you must return atleast one employee ID as a recommendation.
+                    content: `Instructions: Select the most suitable employees for the position described below, ranking them in descending order of suitability.
+
+Your response should include only employee IDs, separated by commas with NO spaces.
 
                 Employees : 
                 ${JSON.stringify(filtered)}
@@ -54,7 +55,6 @@ Estimated : ${position.expectedSalary}
 Description : 
 ${position.description}"
 
-i'll reitirate, you must return atleast one employee ID as a recommendation.
 
 `,
                 },
@@ -62,7 +62,6 @@ i'll reitirate, you must return atleast one employee ID as a recommendation.
         });
 
         let recommendations = completion.choices[0].message.content.split(",")
-
         let first_recommendation = await Account.findById(recommendations[0])
         let second_recommendation = await Account.findById(recommendations[1])
         let third_recommendation = await Account.findById(recommendations[2])
