@@ -21,7 +21,7 @@ export async function getEmployeeSurplusByDepartment(req, res) {
 export async function getAllDepartments(req, res) {
     let companyId = req.query["company"]
     if (!companyId) return res.status(404).send({ msg: "Company Not Found" })
-    console.log(companyId)
+   
     try {
         let departments = await Department.find({ company: companyId }).populate("manager").populate("positions")
 

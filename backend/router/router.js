@@ -41,8 +41,8 @@ router.post("/changePassword", async (req, res) => {
 
         let randomhashPassword = await bcrypt.hash(password, 10)
         account.password = randomhashPassword
-        account.passwordChanged=true
-        account.passwordLink=""
+        account.passwordChanged = true
+        account.passwordLink = ""
         await account.save()
         return res.status(200).send({ msg: "password changed" })
 
@@ -65,9 +65,7 @@ router.post("/temporaryPassword", async (req, res) => {
     if (!account || account.length <= 0) return res.status(404).send({ msg: "email does not exist" })
 
 
-    // const randPassword = await crypto.randomBytes(4).toString('hex');
     const randPassword = await crypto.randomBytes(40).toString('hex')
-    // let randomhashPassword = await bcrypt.hash(randPassword,10)
     account.passwordLink = randPassword
     var transporter = nodemailer.createTransport({
         service: 'Gmail',
@@ -101,7 +99,7 @@ If you did not request a password reset or have any questions, please contact ou
             console.log(error);
         } else {
             console.log('Email sent: ' + info.response)
-     
+
             try {
                 await account.save()
 

@@ -55,7 +55,6 @@ export async function postPosition(req, res) {
     let { title, description, department, expectedSalary, experienceYears,
         requirments, jobType, skills } = req.body
 
-    //  console.log(jobType)
 
     try {
         let position = new Position({
@@ -143,7 +142,6 @@ export async function deletePosition(req, res) {
 
 export async function fillPosition(req, res) {
     let companyId = req.query["company"]
-    console.log(companyId)
     let { employeeId, positionId } = req.body
 
     if (!employeeId) return res.status(400).send({ msg: "employee Id is empty" })
@@ -172,9 +170,7 @@ export async function fillPosition(req, res) {
             await session.abortTransaction()
             return res.status(404).send({ msg: "Employee not found" })
         }
-        console.log("department Id :  " + employee.department._id)
-        console.log("Employee Id:  " + employeeId)
-        console.log("position Id:  " + positionId)
+  
         let oldDepartment = await Department.findById(employee.department._id).session(session)
         if (!oldDepartment) {
             await session.abortTransaction()
@@ -208,7 +204,6 @@ export async function fillPosition(req, res) {
 
         
 
-        console.log(oldDepartment)
         newDepartment.employees.push(employee._id)
         newDepartment.employees = await [...new Set(newDepartment.employees)]
         oldDepartment.employees = await oldDepartment.employees.filter(e => e.toString() !== employee._id.toString())

@@ -24,7 +24,7 @@ export async function createCompany(req, res) {
 
 export async function getAllPositionsByCompany(req, res) {
     let { id } = req.params
-    console.log(id)
+   
     try {
     
         let positions = await Position.find({company:id})
