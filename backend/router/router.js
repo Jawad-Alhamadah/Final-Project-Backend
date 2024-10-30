@@ -41,7 +41,8 @@ router.post("/changePassword", async (req, res) => {
 
         let randomhashPassword = await bcrypt.hash(password, 10)
         account.password = randomhashPassword
-        account.passwordChanged=false
+        account.passwordChanged=true
+        account.passwordLink=""
         await account.save()
         return res.status(200).send({ msg: "password changed" })
 
@@ -56,7 +57,7 @@ router.post("/changePassword", async (req, res) => {
 })
 
 router.post("/temporaryPassword", async (req, res) => {
-    
+
     let { email } = req.body
     let account = await Account.findOne({ email })
 
