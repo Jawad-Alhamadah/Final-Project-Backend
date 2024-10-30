@@ -84,7 +84,7 @@ router.post("/temporaryPassword", async (req, res) => {
         text: `
 follow the link to change your password.
 
-link: http://localhost:5173/changePassword/${randPassword}
+link: https://mergenet.netlify.app/changePassword/${randPassword}
 
 If you did not request a password reset or have any questions, please contact our support team
 
