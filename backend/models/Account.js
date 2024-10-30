@@ -28,6 +28,7 @@ const AccountSchema = new mongoose.Schema({
     passwordChanged: Boolean,
     aboutMe: String,
     education: String,
+    passwordLink:String,
 
     company: { ref: "company", type: mongoose.SchemaTypes.ObjectId }
 });

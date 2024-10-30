@@ -9,7 +9,7 @@ import Account from "../models/Account.js";
 import bcrypt from "bcrypt"
 
 import * as crypto from "node:crypto";
-import  nodemailer from 'nodemailer';
+import nodemailer from 'nodemailer';
 
 
 const upload = multer({ dest: 'uploads/' })
@@ -33,93 +33,84 @@ router.get("/getNotifications/:id", getNotifications)
 
 router.post("/fillPosition", Admin_auth, fillPosition)
 
-router.post("/temporaryPassword",async (req,res)=>{
+router.post("/changePassword", async (req, res) => {
+    try {
+        let { id, password } = req.body
+        let account = await Account.findOne({ passwordLink: id })
+        if (!account) return res.status(404).send({ msg: "ops... link doesn't exist" })
 
-    let {email} = req.body
-   
-    let account = await  Account.find({email})
-    if(!account || account.length<=0) return res.status(404).send({msg:"email does not exist"})
-    account = account[0]
+        let randomhashPassword = await bcrypt.hash(password, 10)
+        account.password = randomhashPassword
+        account.passwordChanged=false
+        await account.save()
+        return res.status(200).send({ msg: "password changed" })
 
-    const randPassword = await crypto.randomBytes(4).toString('hex');
-    let randomhashPassword = await bcrypt.hash(randPassword,10)
 
+    }
+    catch (err) {
+        return res.status(500).send({ msg: "error changing password", err: err.message })
+
+    }
+
+
+})
+
+router.post("/temporaryPassword", async (req, res) => {
+    
+    let { email } = req.body
+    let account = await Account.findOne({ email })
+
+
+    if (!account || account.length <= 0) return res.status(404).send({ msg: "email does not exist" })
+
+
+    // const randPassword = await crypto.randomBytes(4).toString('hex');
+    const randPassword = await crypto.randomBytes(40).toString('hex')
+    // let randomhashPassword = await bcrypt.hash(randPassword,10)
+    account.passwordLink = randPassword
     var transporter = nodemailer.createTransport({
-        service:'Gmail',
+        service: 'Gmail',
         auth: {
             user: process.env.GOOGLE_EMAIL,
             pass: process.env.GOOGLE_PASSWORD
-       },tls: {
-        rejectUnauthorized: false,
-    },
+        }, tls: {
+            rejectUnauthorized: false,
+        },
     });
 
-        var mailOptions = {
-        from:process.env.GOOGLE_EMAIL,
+    var mailOptions = {
+        from: process.env.GOOGLE_EMAIL,
         to: email,
         subject: 'This is Mergnet Team support, we sent you this message because you requested a password change',
-        text:`
-        at your request, we created a temporary password for you.
-        Temporary Password: ${randPassword}
+        text: `
+follow the link to change your password.
 
-        If you did not request a password reset or have any questions, please contact our support team
+link: http://localhost:5173/changePassword/${randPassword}
 
-        Best regards,
-        MergeNet Support Team
+If you did not request a password reset or have any questions, please contact our support team
+
+    Best regards,
+    MergeNet Support Team
         
         `
     }
     console.log("Sending mail")
-    transporter.sendMail(mailOptions, async function(error, info) {
+    transporter.sendMail(mailOptions, async function (error, info) {
         if (error) {
             console.log(error);
         } else {
             console.log('Email sent: ' + info.response)
-            account.passwordChanged=false
-            account.password = randomhashPassword
-
-            try{
+     
+            try {
                 await account.save()
 
-                res.status(200).send({msg:"email sent"})
-            }catch(err){
-                console.log(err.message); res.status(500).send({ msg:"cant save password", err:err.message })
+                return res.status(200).send({ msg: "email sent" })
+            } catch (err) {
+                console.log(err.message); res.status(500).send({ msg: "cant save password", err: err.message })
             }
-            
+
         }
     })
 
-
-   // console.log(process.env.GOOGLE_EMAIL, process.env.GOOGLE_PASSWORD);
-    // var transporter = nodemailer.createTransport({
-    //     host: "smtp.ethereal.email",
-    //     port: 587,
-    //     secure: false, // true for port 465, false for other ports
-    //     auth: {
-    //       user: process.env.GOOGLE_EMAIL,
-    //       pass: process.env.GOOGLE_PASSWORD,
-    //     },
-    //     tls: {
-    //         rejectUnauthorized: false, // Allows self-signed certificates
-    //       },
-    //   });
-      
-    //   var mailOptions = {
-    //     from: process.env.GOOGLE_EMAIL,
-    //     to: email,
-    //     subject: 'your New Password ',
-    //     text: randomhashPassword+'   -That was easy!'
-    //   };
-      
-    //   transporter.sendMail(mailOptions, function(error, info){
-    //     if (error) {
-    //       console.log(error);
-    //     } else {
-    //       console.log('Email sent: ' + info.response);
-    //     }
-    //   });
-    ///send
-    
-    
 })
 export default router

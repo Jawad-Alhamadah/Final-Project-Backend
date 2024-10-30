@@ -183,14 +183,14 @@ export async function fillPosition(req, res) {
 
 
 
-        console.log("here 1")
+       
         let newDepartment = await Department.findById(position.department._id).session(session)
         if (!newDepartment) {
             await session.abortTransaction()
             return res.status(404).send({ msg: "Department not found" })
         }
 
-        console.log("here 2")
+        
 
         let oldPosition = employee.positionTitle
         let oldManager = employee.department.manager
@@ -199,14 +199,14 @@ export async function fillPosition(req, res) {
         let newManager = position.department.manager
 
 
-        console.log("here 3")
+       
 
         employee.department = position.department._id
         employee.positionTitle = newPosition
         employee.excess = false
         await employee.save({ session })
 
-        console.log("here 4")
+        
 
         console.log(oldDepartment)
         newDepartment.employees.push(employee._id)
@@ -220,17 +220,16 @@ export async function fillPosition(req, res) {
         newDepartment.empNum = newDepartment.employees.length
 
 
-        console.log("here 5")
+        
 
         position.status = true;
 
         await newDepartment.save({ session })
-        console.log(oldDepartment)
-        console.log("here 6")
+        
         await oldDepartment.save({ session })
-        console.log("here 7")
+        
         await position.save({ session })
-        console.log("here 8")
+        
 
 
         let request = await new Request({
