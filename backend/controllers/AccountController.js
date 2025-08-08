@@ -217,11 +217,11 @@ export async function createAccount_admin(req, res) {
 
         })
 
-        let dep = await Department.findById(department)
-        if(!dep) return res.status(404).send({ msg: "department not found" })
-        dep.employees.push(account._id)
+       // let dep = await Department.findById(department)
+        //if(!dep) return res.status(404).send({ msg: "department not found" })
+        //dep.employees.push(account._id)
         //let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
-        await dep.save()
+        //await dep.save()
         //let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
         await account.save()
         res.status(200).send({ msg: "Account Created Sucessfully",accountType:account.accountType,email:account.email, company: account.company, name: account.name, id: account._id, excess: account.excess })
@@ -258,12 +258,12 @@ export async function createAccount_manager(req, res) {
 
         })
 
-       // let dep = await Department.findById(department)
-        //if(!dep) return res.status(404).send({ msg: "department not found" })
-        //dep.employees.push(account._id)
+        let dep = await Department.findById(department)
+        if(!dep) return res.status(404).send({ msg: "department not found" })
+        dep.employees.push(account._id)
         //let token = await jwt.sign({ id: account._id, email: account.email }, process.env.JWT_secret, { expiresIn: "2h" })
         await account.save()
-      //  await dep.save()
+        await dep.save()
         res.status(200).send({ msg: "Account Created Sucessfully",accountType:account.accountType,email:account.email, company: account.company, name: account.name, id: account._id, excess: account.excess })
     }
     catch (err) {
